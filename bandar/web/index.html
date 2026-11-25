@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' qrc:; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'"
+    />
+    <title>Bandar</title>
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/list.css" />
+    <link rel="stylesheet" href="css/overlays.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <script src="qrc:///qtwebchannel/qwebchannel.js" defer></script>
+    <script src="js/fa.js" defer></script>
+    <script src="js/ar.js" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/util.js" defer></script>
+    <script src="js/messages.js" defer></script>
+    <script src="js/native.js" defer></script>
+    <script src="js/store.js" defer></script>
+    <script src="js/view-model.js" defer></script>
+    <script src="js/overlays.js" defer></script>
+    <script src="js/dnd.js" defer></script>
+    <script src="js/list.js" defer></script>
+    <script src="js/sidebar.js" defer></script>
+    <script src="js/drawer.js" defer></script>
+    <script src="js/service-form.js" defer></script>
+    <script src="js/group-form.js" defer></script>
+    <script src="js/import-form.js" defer></script>
+    <script src="js/settings-form.js" defer></script>
+    <script src="js/header.js" defer></script>
+    <script src="js/app.js" defer></script>
+  </head>
+  <body data-theme="light" data-palette="ocean" data-density="comfortable">
+    <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <symbol id="i-anchor" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.2" />
+          <path d="M12 7.2V21M8 10.5h8M4.5 14c.6 4 3.6 7 7.5 7s6.9-3 7.5-7M3 15.5l1.5-1.5 1.7 1.5M21 15.5 19.5 14l-1.7 1.5" />
+        </symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+        <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z" /></symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2" /></symbol>
+        <symbol id="i-restart" viewBox="0 0 24 24">
+          <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5" />
+        </symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24">
+          <path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+        </symbol>
+        <symbol id="i-edit" viewBox="0 0 24 24">
+          <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm9.5-13.5 4 4" />
+        </symbol>
+        <symbol id="i-more" viewBox="0 0 24 24">
+          <circle cx="5" cy="12" r="1.3" /><circle cx="12" cy="12" r="1.3" /><circle cx="19" cy="12" r="1.3" />
+        </symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z" /></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5" />
+        </symbol>
+        <symbol id="i-settings" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+        </symbol>
+        <symbol id="i-language" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+        </symbol>
+        <symbol id="i-github" viewBox="0 0 16 16">
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+          />
+        </symbol>
+        <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" /></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></symbol>
+        <symbol id="i-caret" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" /></symbol>
+        <symbol id="i-grip" viewBox="0 0 24 24">
+          <circle cx="9" cy="6" r="1.2" /><circle cx="15" cy="6" r="1.2" /><circle cx="9" cy="12" r="1.2" />
+          <circle cx="15" cy="12" r="1.2" /><circle cx="9" cy="18" r="1.2" /><circle cx="15" cy="18" r="1.2" />
+        </symbol>
+        <symbol id="i-logs" viewBox="0 0 24 24"><path d="M4 6h16M4 10h10M4 14h16M4 18h8" /></symbol>
+        <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 13l9 5 9-5" /></symbol>
+        <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></symbol>
+        <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v6m0-9.5h.01" /></symbol>
+        <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m7 9 3 3-3 3m5 1h5" /></symbol>
+        <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16m0 0-3-3m3 3 3-3M17 20V4m0 0-3 3m3-3 3 3" /></symbol>
+        <symbol id="i-sort-az" viewBox="0 0 24 24"><path d="M4 7h7M4 12h5M4 17h3M17 4v16m0 0-3-3m3 3 3-3" /></symbol>
+        <symbol id="i-duplicate" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3m6-2v-4m-2 2h4" /></symbol>
+        <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></symbol>
+        <symbol id="i-unplug" viewBox="0 0 24 24"><path d="m19 5 3-3M2 22l3-3m1.3-5.7L4 11.6a3 3 0 0 0 0 4.2l4.2 4.2a3 3 0 0 0 4.2 0l1.7-2.3M7.5 13.5 10 11m.5 5.5L13 14m.7-7.3 2.3-1.7a3 3 0 0 1 4.2 0l.8.8a3 3 0 0 1 0 4.2l-1.7 2.3" /></symbol>
+        <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6" /></symbol>
+        <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14m-6-6 6 6 6-6" /></symbol>
+        <symbol id="i-sidebar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" /></symbol>
+        <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4" /></symbol>
+        <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" /></symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14" /></symbol>
+        <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" /></symbol>
+        <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="13" rx="2" /><path d="M12 16v5m-5 0h10" /></symbol>
+        <symbol id="i-switch" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4m4 4H7" /></symbol>
+        <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" /></symbol>
+      </defs>
+    </svg>
+
+    <div class="app" id="app">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <span class="brand-mark"><svg><use href="#i-anchor" /></svg></span>
+          <div>
+            <div class="brand-name" data-t>Bandar</div>
+            <div class="brand-tagline" data-t>Port-forward manager</div>
+          </div>
+        </div>
+
+        <nav class="nav" id="view-nav" aria-label="Views">
+          <button data-view="all" class="nav-item">
+            <svg><use href="#i-list" /></svg><span data-t>All services</span><span class="nav-count" data-count="all"></span>
+          </button>
+          <button data-view="running" class="nav-item">
+            <svg><use href="#i-pulse" /></svg><span data-t>Running</span><span class="nav-count" data-count="running"></span>
+          </button>
+          <button data-view="problems" class="nav-item">
+            <svg><use href="#i-alert" /></svg><span data-t>Problems</span><span class="nav-count danger" data-count="problems"></span>
+          </button>
+          <button data-view="stopped" class="nav-item">
+            <svg><use href="#i-pause" /></svg><span data-t>Stopped</span><span class="nav-count" data-count="stopped"></span>
+          </button>
+        </nav>
+
+        <section class="nav-section">
+          <header class="nav-heading">
+            <span data-t>Groups</span>
+            <span class="nav-heading-actions">
+              <button class="icon-button small" id="sort-groups" data-t-title="Sort groups A→Z"><svg><use href="#i-sort-az" /></svg></button>
+              <button class="icon-button small" id="sidebar-new-group" data-t-title="New group"><svg><use href="#i-plus" /></svg></button>
+            </span>
+          </header>
+          <div class="env-filter" id="env-filter" hidden></div>
+          <ul class="group-nav" id="group-nav"></ul>
+        </section>
+
+        <div class="sidebar-bottom">
+          <button class="kube-note" id="kube-note" data-t-title="Switch the current kubectl context" aria-haspopup="menu">
+            <span class="status-dot"></span><span id="kube-note-text" data-t>Reading kubeconfig…</span>
+            <svg class="caret" aria-hidden="true"><use href="#i-switch" /></svg>
+          </button>
+          <div class="version-note">
+            <span translate="no">Bandar</span> <span id="app-version" dir="ltr"></span>
+            <span data-t>Forward. Watch. Recover.</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <button class="icon-button" id="toggle-sidebar" data-t-title="Toggle sidebar"><svg><use href="#i-sidebar" /></svg></button>
+          <div class="title-block">
+            <h1 id="page-title" data-t>All services</h1>
+            <p id="page-subtitle"></p>
+          </div>
+          <label class="search">
+            <svg><use href="#i-search" /></svg>
+            <input id="search" type="search" autocomplete="off" spellcheck="false" data-t-placeholder="Search name, context, namespace, port…" />
+            <kbd>/</kbd>
+          </label>
+          <div class="top-actions">
+            <button class="icon-button" id="language-button" data-t-title="Application language" data-t-aria="Application language"
+              aria-haspopup="listbox" aria-expanded="false" aria-controls="language-menu"><svg><use href="#i-language" /></svg></button>
+            <div class="theme-anchor">
+              <button class="icon-button" id="theme-button" data-t-title="Toggle theme"><svg><use href="#i-moon" /></svg></button>
+              <button class="icon-button" id="theme-settings-button" data-t-title="Theme and colors" data-t-aria="Theme and colors"
+                aria-expanded="false" aria-controls="theme-panel"><svg aria-hidden="true"><use href="#i-chevron" /></svg></button>
+              <section id="theme-panel" class="theme-panel" data-t-aria="Theme and colors" hidden>
+                <div class="theme-panel-heading">
+                  <h2 data-t>Theme &amp; colors</h2>
+                  <button class="icon-button small" id="theme-close" data-t-aria="Close"><svg aria-hidden="true"><use href="#i-close" /></svg></button>
+                </div>
+                <fieldset>
+                  <legend data-t>Appearance</legend>
+                  <div class="theme-modes">
+                    <button data-theme-choice="light"><svg aria-hidden="true"><use href="#i-sun" /></svg><span data-t>Light</span></button>
+                    <button data-theme-choice="dark"><svg aria-hidden="true"><use href="#i-moon" /></svg><span data-t>Dark</span></button>
+                    <button data-theme-choice="auto"><svg aria-hidden="true"><use href="#i-monitor" /></svg><span data-t>Automatic</span></button>
+                  </div>
+                  <p id="theme-system-status"></p>
+                </fieldset>
+                <fieldset>
+                  <legend data-t>Color palette</legend>
+                  <div class="theme-palette-grid">
+                    <button class="palette-choice" data-palette="ocean" data-palette-choice="ocean"><span class="palette-swatch"></span><span data-t>ocean</span></button>
+                    <button class="palette-choice" data-palette="forest" data-palette-choice="forest"><span class="palette-swatch"></span><span data-t>forest</span></button>
+                    <button class="palette-choice" data-palette="violet" data-palette-choice="violet"><span class="palette-swatch"></span><span data-t>violet</span></button>
+                    <button class="palette-choice" data-palette="rose" data-palette-choice="rose"><span class="palette-swatch"></span><span data-t>rose</span></button>
+                    <button class="palette-choice" data-palette="amber" data-palette-choice="amber"><span class="palette-swatch"></span><span data-t>amber</span></button>
+                    <button class="palette-choice" data-palette="slate" data-palette-choice="slate"><span class="palette-swatch"></span><span data-t>slate</span></button>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend data-t>Density</legend>
+                  <div class="theme-modes two">
+                    <button data-density-choice="comfortable"><span data-t>Comfortable</span></button>
+                    <button data-density-choice="compact"><span data-t>Compact</span></button>
+                  </div>
+                </fieldset>
+              </section>
+            </div>
+            <button class="icon-button" id="settings-button" data-t-title="Settings (Ctrl+,)"><svg><use href="#i-settings" /></svg></button>
+          </div>
+        </header>
+
+        <section class="stats" id="stats"></section>
+
+        <div class="banner error" id="config-banner" hidden>
+          <svg><use href="#i-alert" /></svg>
+          <div>
+            <strong data-t>The configuration file has an error. Changes are not being saved.</strong>
+            <span id="config-banner-detail" dir="ltr"></span>
+            <span data-t>Fix the file and Bandar reloads it automatically, or start over with an empty configuration.</span>
+          </div>
+          <button class="button" id="config-banner-open" data-t>Open folder</button>
+          <button class="button danger" id="config-banner-reset" data-t>Back up and reset</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-group" id="global-actions">
+            <button class="button" id="start-all"><svg><use href="#i-play" /></svg><span data-t>Start all</span></button>
+            <button class="button" id="stop-all"><svg><use href="#i-stop" /></svg><span data-t>Stop all</span></button>
+            <button class="button" id="retry-failed"><svg><use href="#i-restart" /></svg><span data-t>Retry failed</span></button>
+          </div>
+          <div class="toolbar-group bulk" id="bulk-actions" hidden>
+            <span class="bulk-count" id="bulk-count"></span>
+            <button class="button" data-bulk="start"><svg><use href="#i-play" /></svg><span data-t>Start</span></button>
+            <button class="button" data-bulk="stop"><svg><use href="#i-stop" /></svg><span data-t>Stop</span></button>
+            <button class="button" data-bulk="restart"><svg><use href="#i-restart" /></svg><span data-t>Restart</span></button>
+            <button class="button" data-bulk="move"><svg><use href="#i-layers" /></svg><span data-t>Move to group</span><svg class="caret"><use href="#i-caret" /></svg></button>
+            <button class="button danger" data-bulk="delete"><svg><use href="#i-trash" /></svg><span data-t>Delete</span></button>
+            <button class="icon-button" data-bulk="clear" data-t-title="Clear selection (Esc)"><svg><use href="#i-close" /></svg></button>
+          </div>
+          <div class="toolbar-group end">
+            <button class="button" id="import-button" data-t-title="Import and export (Ctrl+I)"><svg><use href="#i-import" /></svg><span data-t>Import</span></button>
+            <button class="button" id="new-group-button" data-t-title="New group (Ctrl+G)"><svg><use href="#i-layers" /></svg><span data-t>New group</span></button>
+            <button class="button primary" id="new-service-button" data-t-title="New service (Ctrl+N)"><svg><use href="#i-plus" /></svg><span data-t>New service</span></button>
+          </div>
+        </div>
+
+        <div class="sort-note" id="sort-note" hidden>
+          <svg><use href="#i-sort" /></svg><span id="sort-note-text"></span>
+          <button class="link-button" id="sort-reset" data-t>Use manual order</button>
+        </div>
+
+        <div class="list-wrap" id="list-wrap">
+          <div class="list" id="list" role="table" aria-label="Services">
+            <div class="list-head row-grid" role="row" id="list-head"></div>
+            <div id="list-body"></div>
+          </div>
+          <div class="empty" id="empty" hidden></div>
+        </div>
+
+        <footer class="statusbar">
+          <div class="status-left">
+            <button class="status-link" id="status-config" data-t-title="Open the configuration folder"><svg><use href="#i-folder" /></svg><span id="status-config-path" dir="ltr"></span></button>
+            <span class="status-separator">·</span>
+            <span id="status-kubectl" dir="ltr">kubectl</span>
+            <span class="status-separator">·</span>
+            <button class="status-link" id="status-context" data-t-title="Switch the current kubectl context"></button>
+            <span class="status-separator">·</span>
+            <span id="status-save"></span>
+          </div>
+          <span class="developer-credit" dir="ltr">
+            <button class="status-link" id="open-logs" data-t-title="Open application logs"><span data-t>Logs</span></button>
+            <a id="repository-link" href="#" data-t-title="Bandar on GitHub" data-t-aria="Bandar on GitHub"><svg aria-hidden="true"><use href="#i-github" /></svg></a>
+            <span>© 2026 · <span data-t>Development by</span> <a id="developer-link" href="#" translate="no"></a></span>
+            <span class="status-separator">·</span>
+            <span class="version-chip" id="status-version"></span>
+          </span>
+        </footer>
+      </main>
+
+      <aside class="drawer" id="drawer" hidden aria-label="Service details"></aside>
+    </div>
+
+    <dialog class="sheet" id="service-dialog"></dialog>
+    <dialog class="sheet small" id="group-dialog"></dialog>
+    <dialog class="sheet wide" id="import-dialog"></dialog>
+    <dialog class="sheet" id="settings-dialog"></dialog>
+    <dialog class="sheet small" id="confirm-dialog"></dialog>
+    <div class="menu" id="menu" role="menu" hidden></div>
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+    <div class="loading" id="loading"><span class="spinner"></span></div>
+  </body>
+</html>

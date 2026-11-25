@@ -1,0 +1,202 @@
+/* Header popovers in Khana's style: theme & colors panel and the language picker. */
+.theme-anchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+#theme-settings-button {
+  min-width: 20px;
+  padding: 0 2px;
+  margin-inline-start: -4px;
+}
+#theme-settings-button svg {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+  transition: transform 0.18s var(--ease);
+}
+#theme-settings-button[aria-expanded='true'] svg {
+  transform: rotate(-90deg);
+}
+.theme-panel {
+  position: absolute;
+  z-index: 150;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  width: 310px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  padding: 14px 16px 6px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  animation: rise 0.14s var(--ease);
+}
+.theme-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.theme-panel-heading h2 {
+  margin: 0;
+  font-size: 13px;
+}
+.theme-panel fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+  min-width: 0;
+}
+.theme-panel legend {
+  padding: 0;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.theme-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.theme-modes.two {
+  grid-template-columns: repeat(2, 1fr);
+}
+.theme-modes button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 11px;
+}
+.theme-modes.two button {
+  padding: 7px 4px;
+}
+.theme-modes button[aria-pressed='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+#theme-system-status {
+  margin: 8px 0 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.theme-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.theme-palette-grid .palette-choice {
+  padding: 7px 3px;
+  font-size: 10.5px;
+}
+
+/* Language picker */
+#language-button {
+  min-width: 34px;
+}
+.picker-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  z-index: 160;
+  padding: 5px;
+  min-width: 170px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  font: inherit;
+  animation: rise 0.12s var(--ease);
+}
+.picker-menu button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: start;
+}
+.picker-menu button:hover,
+.picker-menu button:focus-visible {
+  background: var(--hover);
+  outline: none;
+}
+.picker-menu button[aria-selected='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.picker-menu .language-flag {
+  width: 26px;
+  height: 17px;
+  stroke: none;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px #0001;
+}
+
+/* The kube context switcher in the sidebar */
+button.kube-note {
+  width: 100%;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  width: calc(100% + 16px);
+  border-radius: var(--radius-small);
+  text-align: start;
+}
+button.kube-note:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+button.kube-note .caret {
+  width: 13px;
+  height: 13px;
+  margin-inline-start: auto;
+  opacity: 0.6;
+}
+.menu .menu-note {
+  padding: 2px 10px 6px;
+  color: var(--faint);
+  font-size: 11px;
+  max-width: 300px;
+  white-space: normal;
+}
+.menu button .menu-sub {
+  margin-inline-start: auto;
+  padding-inline-start: 12px;
+  color: var(--faint);
+  font-size: 11px;
+  font-family: var(--mono);
+}
+
+/* Environment filter chips in the sidebar */
+.env-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 6px 10px;
+}
+.env-filter button {
+  cursor: pointer;
+  opacity: 0.75;
+}
+.env-filter button:hover,
+.env-filter button[aria-pressed='true'] {
+  opacity: 1;
+}
+.env-filter button[aria-pressed='true'] {
+  background: var(--env);
+  color: #fff;
+}

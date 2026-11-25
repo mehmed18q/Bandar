@@ -1,0 +1,29 @@
+[project]
+name = "bandar"
+dynamic = ["version"]
+description = "A desktop manager for kubectl port-forwards"
+requires-python = ">=3.11"
+authors = [{ name = "Sadeq Kiomarsi" }]
+dependencies = ["PySide6==6.12.0"]
+
+[project.urls]
+Repository = "https://github.com/mehmed18q/bandar"
+
+[project.scripts]
+bandar = "bandar.desktop:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "bandar.VERSION" }
+
+[tool.setuptools.package-data]
+bandar = ["web/**/*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

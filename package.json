@@ -1,0 +1,8 @@
+{
+  "name": "bandar-interface",
+  "private": true,
+  "description": "Interface tests for Bandar (no dependencies; Node 20+)",
+  "scripts": {
+    "test": "node --test tests/js/*.test.cjs"
+  }
+}

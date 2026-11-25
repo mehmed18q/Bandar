@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Bandar
+GenericName=Port-forward manager
+Comment=Manage kubectl port-forwards with live status and automatic reconnection
+Exec=/usr/bin/bandar
+TryExec=/usr/bin/bandar
+Icon=io.bandar.Bandar
+Terminal=false
+Categories=Development;
+StartupNotify=true
+StartupWMClass=Bandar
+Keywords=kubectl;kubernetes;k8s;port-forward;tunnel;

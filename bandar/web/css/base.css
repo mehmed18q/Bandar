@@ -1,0 +1,419 @@
+/* Element defaults and small reusable controls. */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font: 13px/1.55 var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] {
+  display: none !important;
+}
+svg.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+a {
+  color: var(--accent);
+}
+code,
+kbd,
+.mono {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 10px;
+  direction: ltr;
+}
+::selection {
+  background: var(--accent-soft);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  box-shadow: var(--shadow-small);
+  white-space: nowrap;
+  font-weight: 500;
+}
+.button svg {
+  width: 15px;
+  height: 15px;
+}
+.button svg.caret {
+  width: 12px;
+  height: 12px;
+  margin-inline-start: -3px;
+}
+.button:hover:not(:disabled) {
+  background: var(--hover);
+  border-color: color-mix(in srgb, var(--line), var(--text) 12%);
+}
+.button.primary {
+  background: var(--solid);
+  border-color: var(--solid);
+  color: var(--on-solid);
+}
+.button.primary:hover:not(:disabled) {
+  background: var(--solid-hover);
+  border-color: var(--solid-hover);
+}
+.button.danger {
+  color: var(--err);
+}
+.button.danger:hover:not(:disabled) {
+  background: var(--err-soft);
+  border-color: color-mix(in srgb, var(--err), transparent 60%);
+}
+.button.danger.solid {
+  background: var(--err);
+  border-color: var(--err);
+  color: #fff;
+}
+.button.ghost {
+  border-color: transparent;
+  box-shadow: none;
+  background: transparent;
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: var(--radius-small);
+  color: var(--muted);
+}
+.icon-button:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--text);
+}
+.icon-button.small {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 3px;
+}
+.icon-button.small svg {
+  width: 14px;
+  height: 14px;
+}
+.icon-button.danger:hover:not(:disabled) {
+  color: var(--err);
+  background: var(--err-soft);
+}
+.icon-button.ok:hover:not(:disabled) {
+  color: var(--ok);
+  background: var(--ok-soft);
+}
+.link-button {
+  padding: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+.link-button:hover {
+  text-decoration: underline;
+}
+
+/* Inputs */
+.input,
+.field input:not([type='checkbox']):not([type='radio']),
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.field textarea {
+  resize: vertical;
+}
+.input:focus,
+.field input:not([type='checkbox']):focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent), transparent 82%);
+}
+.field.invalid input:not([type='checkbox']),
+.field.invalid select,
+.field.invalid textarea {
+  border-color: var(--err);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--err), transparent 85%);
+}
+
+/* Status pieces */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--idle);
+  flex-shrink: 0;
+}
+.status-dot.hollow {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.6px var(--idle);
+}
+.tone-ok {
+  --tone: var(--ok);
+  --tone-soft: var(--ok-soft);
+}
+.tone-warn {
+  --tone: var(--warn);
+  --tone-soft: var(--warn-soft);
+}
+.tone-err {
+  --tone: var(--err);
+  --tone-soft: var(--err-soft);
+}
+.tone-info {
+  --tone: var(--accent);
+  --tone-soft: var(--accent-soft);
+}
+.tone-idle {
+  --tone: var(--idle);
+  --tone-soft: var(--hover);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--tone-soft);
+  color: var(--tone);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge .status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--tone);
+}
+.badge.live .status-dot {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone), transparent 40%);
+  }
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid color-mix(in srgb, currentColor, transparent 70%);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--text);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chip.context {
+  background: hsl(var(--chip-hue, 210) 60% 50% / 0.12);
+  color: hsl(var(--chip-hue, 210) 55% 38%);
+  font-weight: 600;
+}
+body[data-theme='dark'] .chip.context {
+  background: hsl(var(--chip-hue, 210) 50% 50% / 0.18);
+  color: hsl(var(--chip-hue, 210) 70% 75%);
+}
+.chip.inherited {
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.85;
+}
+.chip .tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  font-style: normal;
+}
+.muted {
+  color: var(--muted);
+}
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.switch {
+  position: relative;
+  display: inline-flex;
+  width: 34px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.switch input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.switch span {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background 0.2s;
+  pointer-events: none;
+}
+.switch span::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px #0003;
+  transition: transform 0.2s var(--ease);
+}
+.switch input:checked + span {
+  background: var(--solid);
+}
+.switch input:checked + span::after {
+  transform: translateX(14px);
+}
+[dir='rtl'] .switch input:checked + span::after {
+  transform: translateX(-14px);
+}
+.switch input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--radius-small);
+  background: var(--hover);
+  border: 1px solid var(--line-soft);
+}
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 5px;
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.segmented button[aria-pressed='true'] {
+  background: var(--paper);
+  color: var(--text);
+  box-shadow: var(--shadow-small);
+}
+.segmented button svg {
+  width: 14px;
+  height: 14px;
+}

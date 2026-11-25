@@ -1,0 +1,517 @@
+/* The grouped service list, Docker Desktop style. */
+.list-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 24px 20px;
+}
+.list {
+  min-width: 1040px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow-small);
+}
+.row-grid {
+  display: grid;
+  grid-template-columns:
+    40px minmax(200px, 1.7fr) minmax(110px, 0.9fr) minmax(120px, 1fr) 156px 82px 70px 70px 64px
+    128px;
+  align-items: center;
+}
+.row-grid > * {
+  min-width: 0;
+  padding-inline-end: 10px;
+}
+.list-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 38px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius) var(--radius) 0 0;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+[dir='rtl'] .list-head {
+  letter-spacing: 0;
+  font-size: 11.5px;
+}
+.head-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
+  margin-inline-start: -4px;
+  border-radius: 5px;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+}
+.head-cell:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.head-cell[aria-sort] {
+  color: var(--accent);
+}
+.head-cell svg {
+  width: 12px;
+  height: 12px;
+}
+.select-cell {
+  display: flex;
+  justify-content: center;
+  padding: 0 !important;
+}
+.check {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--solid);
+  cursor: pointer;
+}
+
+/* Groups */
+.group-block + .group-block {
+  border-top: 1px solid var(--line);
+}
+.group-row {
+  height: 44px;
+  background: color-mix(in srgb, var(--group, var(--idle)), var(--paper) 94%);
+  border-bottom: 1px solid var(--line-soft);
+  position: relative;
+}
+.group-row::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--group, var(--idle));
+}
+.group-block.collapsed .group-row {
+  border-bottom: 0;
+}
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 2 / 5;
+}
+.group-title .caret-button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  color: var(--muted);
+}
+.group-title .caret-button:hover {
+  background: var(--hover);
+}
+.group-title .caret-button svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.18s var(--ease);
+  transform: rotate(90deg);
+}
+.group-block.collapsed .caret-button svg {
+  transform: rotate(0);
+}
+[dir='rtl'] .group-block.collapsed .caret-button svg {
+  transform: rotate(180deg);
+}
+.group-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.group-name.ungrouped {
+  color: var(--muted);
+  font-weight: 600;
+}
+.group-count {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.group-summary {
+  grid-column: 5 / 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.health-bar {
+  display: flex;
+  width: 120px;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--line-soft);
+}
+.health-bar span {
+  height: 100%;
+}
+.health-bar .ok {
+  background: var(--ok);
+}
+.health-bar .warn {
+  background: var(--warn);
+}
+.health-bar .err {
+  background: var(--err);
+}
+.grip {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 24px;
+  margin-inline-start: -6px;
+  color: var(--faint);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.grip svg {
+  width: 14px;
+  height: 14px;
+}
+.sorted .grip {
+  visibility: hidden;
+}
+.group-row:hover .grip,
+.service-row:hover .grip {
+  opacity: 1;
+}
+
+/* Services */
+.service-row {
+  min-height: var(--row-height);
+  border-bottom: 1px solid var(--line-soft);
+  transition: background 0.12s;
+  position: relative;
+}
+.service-row:hover {
+  background: var(--hover);
+}
+.service-row.selected {
+  background: color-mix(in srgb, var(--accent-soft), var(--paper) 35%);
+}
+.service-row.focused {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+[dir='rtl'] .service-row.focused {
+  box-shadow: inset -3px 0 0 var(--accent);
+}
+.service-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.service-name-cell .status-dot {
+  width: 9px;
+  height: 9px;
+}
+.service-label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+.service-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.service-name:hover {
+  color: var(--accent);
+}
+.service-target {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+  text-align: start;
+}
+[dir='rtl'] .service-target {
+  text-align: end;
+}
+.auto-mark {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+.namespace {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.namespace.inherited {
+  color: var(--muted);
+  font-style: italic;
+}
+.port {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--code);
+  border: 1px solid var(--line-soft);
+  font-family: var(--mono);
+  font-size: 12px;
+  direction: ltr;
+}
+button.port:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.uptime,
+.restarts {
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+}
+.restarts.some {
+  color: var(--warn);
+  font-weight: 700;
+}
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+.row-actions .icon-button {
+  min-width: 28px;
+  height: 28px;
+}
+.row-actions .icon-button svg {
+  width: 15px;
+  height: 15px;
+}
+.row-actions .start {
+  color: var(--ok);
+}
+.row-actions .stop {
+  color: var(--err);
+}
+
+/* Problem strip under a row: the error, what it means, what to do */
+.problem {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 14px 12px 48px;
+  padding-inline-end: 40px !important;
+  padding: 9px 12px;
+  border-radius: var(--radius-small);
+  background: var(--tone-soft);
+  border: 1px solid color-mix(in srgb, var(--tone), transparent 72%);
+  font-size: 12px;
+  grid-column: 1 / -1;
+}
+[dir='rtl'] .problem {
+  margin: 4px 48px 12px 14px;
+}
+.problem-close {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  color: var(--muted);
+}
+.problem-close:hover {
+  color: var(--text) !important;
+  background: color-mix(in srgb, var(--tone), transparent 85%) !important;
+}
+.service-row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.problem > svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--tone);
+}
+.problem-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.problem-title {
+  font-weight: 700;
+  color: var(--tone);
+}
+.problem-hint {
+  color: var(--text);
+}
+.problem-detail {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  direction: ltr;
+  text-align: start;
+}
+[dir='rtl'] .problem-detail {
+  text-align: end;
+}
+.problem-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.problem-actions .button {
+  height: 26px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+.service-row > .problem {
+  grid-row: 2;
+}
+
+/* Drag and drop */
+.dragging {
+  opacity: 0.45;
+}
+.drop-before {
+  box-shadow: inset 0 2px 0 var(--accent) !important;
+}
+.drop-after {
+  box-shadow: inset 0 -2px 0 var(--accent) !important;
+}
+.group-row.drop-into {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent) !important;
+}
+.group-empty {
+  padding: 14px 48px;
+  color: var(--faint);
+  font-size: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.group-empty.drop-into {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Empty states */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 20px;
+  text-align: center;
+}
+.empty-art {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 22px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.empty-art svg {
+  width: 36px;
+  height: 36px;
+}
+.empty h2 {
+  margin: 6px 0 0;
+  font-size: 17px;
+}
+.empty p {
+  margin: 0;
+  max-width: 440px;
+  color: var(--muted);
+}
+.empty .actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+mark {
+  background: color-mix(in srgb, var(--warn), transparent 70%);
+  color: inherit;
+  border-radius: 2px;
+}
+
+/* Environment badges: production stands out, legacy recedes. */
+.env {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--env), transparent 86%);
+  color: var(--env);
+  border: 1px solid color-mix(in srgb, var(--env), transparent 65%);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+[dir='rtl'] .env {
+  letter-spacing: 0;
+  font-size: 11px;
+}
+.env.small {
+  height: 16px;
+  padding: 0 4px;
+  font-size: 9px;
+}
+[data-env='production'] {
+  --env: #e5484d;
+}
+[data-env='staging'] {
+  --env: #d9900b;
+}
+[data-env='development'] {
+  --env: #22a55a;
+}
+[data-env='testing'] {
+  --env: #8b5cf6;
+}
+[data-env='legacy'] {
+  --env: #7c8794;
+}
+.group-block[data-env='legacy'] .service-row {
+  opacity: 0.72;
+}
+.group-block[data-env='legacy'] .service-row:hover {
+  opacity: 1;
+}
+.group-block[data-env='production'] > .group-row::before {
+  width: 4px;
+  background: repeating-linear-gradient(180deg, var(--group) 0 6px, #e5484d 6px 12px);
+}
+.env-picker button[aria-pressed='true'] {
+  color: var(--env, var(--text));
+}
+.env-picker .env-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--env, var(--idle));
+}

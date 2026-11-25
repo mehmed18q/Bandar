@@ -1,0 +1,140 @@
+/* Design tokens: fonts, palettes (shared with Khana), status and group colors. */
+@font-face {
+  font-family: Persian;
+  src: url('../fonts/NotoSansArabic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+@font-face {
+  font-family: Persian;
+  src: url('../fonts/NotoSansArabic-SemiBold.ttf') format('truetype');
+  font-weight: 600 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+
+:root {
+  --font: Persian, 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, 'DejaVu Sans Mono', monospace;
+  --radius: 10px;
+  --radius-small: 7px;
+  --row-height: 50px;
+  --sidebar-width: 250px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+body[data-density='compact'] {
+  --row-height: 38px;
+}
+
+[data-palette='ocean'] {
+  --hue: 213;
+  --sat: 65%;
+}
+[data-palette='forest'] {
+  --hue: 158;
+  --sat: 42%;
+}
+[data-palette='violet'] {
+  --hue: 266;
+  --sat: 52%;
+}
+[data-palette='rose'] {
+  --hue: 342;
+  --sat: 53%;
+}
+[data-palette='amber'] {
+  --hue: 32;
+  --sat: 73%;
+}
+[data-palette='slate'] {
+  --hue: 215;
+  --sat: 14%;
+}
+
+body {
+  color-scheme: light;
+  --bg: hsl(var(--hue) 18% 97%);
+  --sidebar: hsl(var(--hue) 20% 94.5%);
+  --paper: #fff;
+  --raised: #fff;
+  --hover: hsl(var(--hue) 25% 96%);
+  --text: hsl(var(--hue) 18% 18%);
+  --muted: hsl(var(--hue) 10% 45%);
+  --faint: hsl(var(--hue) 10% 62%);
+  --line: hsl(var(--hue) 18% 88%);
+  --line-soft: hsl(var(--hue) 18% 93%);
+  --accent: hsl(var(--hue) var(--sat) 38%);
+  --accent-soft: hsl(var(--hue) 45% 93%);
+  --solid: hsl(var(--hue) var(--sat) 42%);
+  --solid-hover: hsl(var(--hue) var(--sat) 35%);
+  --on-solid: #fff;
+  --shadow: 0 10px 40px hsl(var(--hue) 30% 20% / 0.1);
+  --shadow-small: 0 1px 2px hsl(var(--hue) 30% 20% / 0.06);
+  --ok: #1f9d63;
+  --warn: #c27c0e;
+  --err: #d23f36;
+  --idle: hsl(var(--hue) 8% 62%);
+  --ok-soft: #e3f5ec;
+  --warn-soft: #fcf1dc;
+  --err-soft: #fde8e6;
+  --code: hsl(var(--hue) 20% 96.5%);
+  --overlay: hsl(var(--hue) 30% 15% / 0.32);
+}
+body[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: hsl(var(--hue) 16% 10%);
+  --sidebar: hsl(var(--hue) 17% 8.5%);
+  --paper: hsl(var(--hue) 15% 13.5%);
+  --raised: hsl(var(--hue) 15% 16%);
+  --hover: hsl(var(--hue) 15% 17.5%);
+  --text: hsl(var(--hue) 17% 90%);
+  --muted: hsl(var(--hue) 12% 66%);
+  --faint: hsl(var(--hue) 10% 48%);
+  --line: hsl(var(--hue) 15% 23%);
+  --line-soft: hsl(var(--hue) 15% 18%);
+  --accent: hsl(var(--hue) var(--sat) 74%);
+  --accent-soft: hsl(var(--hue) 28% 22%);
+  --solid: hsl(var(--hue) var(--sat) 45%);
+  --solid-hover: hsl(var(--hue) var(--sat) 51%);
+  --shadow: 0 12px 44px #0007;
+  --shadow-small: 0 1px 2px #0004;
+  --ok: #4cc38a;
+  --warn: #e7b04a;
+  --err: #f2766b;
+  --idle: hsl(var(--hue) 8% 50%);
+  --ok-soft: #173a2a;
+  --warn-soft: #3d2f14;
+  --err-soft: #43201d;
+  --code: hsl(var(--hue) 16% 10.5%);
+  --overlay: #0009;
+}
+
+/* Group colors adapt to the theme by mixing with the paper color. */
+[data-color='blue'] {
+  --group: #3b82f6;
+}
+[data-color='teal'] {
+  --group: #14b8a6;
+}
+[data-color='green'] {
+  --group: #22a55a;
+}
+[data-color='amber'] {
+  --group: #e0a00f;
+}
+[data-color='orange'] {
+  --group: #f97316;
+}
+[data-color='red'] {
+  --group: #e5484d;
+}
+[data-color='pink'] {
+  --group: #e94d9b;
+}
+[data-color='violet'] {
+  --group: #8b5cf6;
+}
+[data-color='slate'] {
+  --group: #64748b;
+}

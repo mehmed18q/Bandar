@@ -24,7 +24,7 @@ from bandar.core import config as cfg  # noqa: E402
 from bandar.core.commands import apply_import, plan_import  # noqa: E402
 from bandar.ui.window import MainWindow  # noqa: E402
 
-LIST = (ROOT / "examples" / "sample-services.txt").read_text()
+LIST = (ROOT / "tests" / "fixtures" / "sample-services.txt").read_text()
 RESET = (
     "document.querySelectorAll('dialog[open]').forEach(d => d.close());"
     "bandar.Overlays.Menu.close(); bandar.closePopovers && bandar.closePopovers();"

@@ -34,8 +34,8 @@ and named, with live status, automatic reconnection and errors that say what to 
 ## Install
 
 Ubuntu 24.04+ (amd64): add the APT repository from the
-[project site](https://mehmed18q.github.io/bandar/), or download the `.deb` from the
-[latest release](https://github.com/mehmed18q/bandar/releases/latest) and run
+[project site](https://mehmed18q.github.io/Bandar/), or download the `.deb` from the
+[latest release](https://github.com/mehmed18q/Bandar/releases/latest) and run
 `sudo apt install ./bandar_*.deb`.
 
 ## Run from source
@@ -115,4 +115,4 @@ python3 scripts/build_ubuntu24.py                       # release .deb, built an
 ## License and credits
 
 © 2026 · Development by [Sadeq Kiomarsi](https://github.com/mehmed18q) ·
-[github.com/mehmed18q/bandar](https://github.com/mehmed18q/bandar)
+[github.com/mehmed18q/Bandar](https://github.com/mehmed18q/Bandar)

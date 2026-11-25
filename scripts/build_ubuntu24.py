@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 IMAGE = "bandar-builder:ubuntu24"
-SOURCES = ("bandar", "scripts", "packaging", "tests", "examples")
+SOURCES = ("bandar", "scripts", "packaging", "tests")
 FILES = (
     "main.py",
     "bandar.sh",
@@ -33,7 +33,7 @@ def main():
     (ROOT / "build").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="ubuntu24-", dir=ROOT / "build") as folder:
         stage = Path(folder)
-        ignore = shutil.ignore_patterns("__pycache__", "*.pyc", "my-services.txt")
+        ignore = shutil.ignore_patterns("__pycache__", "*.pyc")
         for name in SOURCES:
             shutil.copytree(ROOT / name, stage / name, ignore=ignore)
         for name in FILES:

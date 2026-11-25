@@ -6,4 +6,3 @@ __pycache__/
 build/
 dist/
 artifacts/
-examples/my-services.txt

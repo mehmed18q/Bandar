@@ -29,4 +29,4 @@ One-time setup:
    (it must match `bandar.VERSION` and `DEBIAN_REVISION`) to publish.
 
 The site source is `site/`; `scripts/create_apt_repository.py` fills in the version and the
-install commands. Screenshots come from `scripts/screens.py` with `examples/sample-services.txt`.
+install commands. Screenshots come from `scripts/screens.py` with `tests/fixtures/sample-services.txt`.

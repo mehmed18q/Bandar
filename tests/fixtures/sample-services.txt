@@ -1,0 +1,11 @@
+# Bandar list format: one service per line; "[group @environment]" starts a group, "[]" ends it.
+[shop @production]
+shop-postgresql = kubectl --context prod -n shop port-forward svc/ok-shop-psql 47432:5432
+shop-redis = kubectl --context prod -n shop port-forward svc/flaky-shop-redis 47379:6379
+
+[shop-stage @staging]
+shop-stage-postgresql = kubectl --context stage -n shop-stage port-forward svc/ok-stage-psql 47433:5432
+shop-stage-redis = kubectl --context stage -n shop-stage port-forward svc/auth-stage-redis 47380:6379
+
+[]
+reports-postgresql = kubectl port-forward svc/missing-reports 47436:5432

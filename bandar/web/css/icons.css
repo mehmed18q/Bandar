@@ -150,21 +150,30 @@ body[data-theme='dark'] .tech-icon.is-emoji {
 .icon-panel {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius-small);
   background: var(--paper);
   overflow: hidden;
 }
+/* Tabs and search share a row when there is room and wrap when there is not. */
 .icon-panel-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   padding: 8px;
   border-bottom: 1px solid var(--line-soft);
   background: var(--raised);
 }
+.icon-panel-bar .segmented {
+  flex: none;
+  max-width: 100%;
+  overflow-x: auto;
+}
 .field .icon-panel-bar input.input {
-  flex: 1;
+  flex: 1 1 180px;
+  min-width: 0;
   width: auto;
   min-height: 30px;
   padding: 4px 9px;
@@ -174,6 +183,7 @@ body[data-theme='dark'] .tech-icon.is-emoji {
   flex-direction: column;
   gap: 6px;
   max-height: 260px;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: 8px 10px 10px;
 }
@@ -191,11 +201,11 @@ body[data-theme='dark'] .tech-icon.is-emoji {
 }
 .icon-grid .icon-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(112px, 100%), 1fr));
   gap: 4px;
 }
 .icon-grid .emoji-row {
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(88px, 100%), 1fr));
 }
 .icon-choice {
   display: flex;

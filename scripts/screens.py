@@ -47,6 +47,8 @@ SCENES = {
     "drawer": "bandar.actions.details(bandar.Store.state.config.services[1].id)",
     "pinned": "bandar.Store.ui({view: 'pinned'})",
     "all": "bandar.Store.ui({view: 'all'})",
+    "group-logos": "bandar.actions.editGroup(bandar.Store.state.config.groups[0].id); setTimeout(() => { const d = document.querySelector('#group-dialog'); d.querySelector('[data-icon-toggle]').click(); d.querySelector('[data-icon-tab=logos]').click(); d.querySelector('[data-icon-panel]').scrollIntoView({ block: 'center', inline: 'nearest' }); }, 400)",
+    "group-suggested": "bandar.actions.editGroup(bandar.Store.state.config.groups[0].id); setTimeout(() => { const d = document.querySelector('#group-dialog'); d.querySelector('[data-icon-toggle]').click(); d.querySelector('[data-icon-panel]').scrollIntoView({ block: 'center', inline: 'nearest' }); }, 400)",
     "picker-logos": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); document.querySelector('#service-dialog [data-icon-tab=logos]').click(); }, 300)",
     "picker-emoji": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); document.querySelector('#service-dialog [data-icon-tab=emoji]').click(); }, 300)",
     "picker-search": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); const f = document.querySelector('#service-dialog [data-icon-filter]'); f.value = 'gold'; f.dispatchEvent(new Event('input')); }, 300)",
@@ -81,7 +83,7 @@ def main():
     for name in scenes:
         script = SCENES.get(name, name)
         QTimer.singleShot(delay, lambda s=script: window.page.runJavaScript(RESET + s))
-        delay += 1300
+        delay += 2200
         QTimer.singleShot(delay, lambda n=name: window.grab().save(str(out / f"{n}.png")))
         delay += 200
     QTimer.singleShot(delay + 200, window.request_quit)

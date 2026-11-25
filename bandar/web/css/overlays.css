@@ -13,6 +13,9 @@ dialog.sheet {
 dialog.sheet.small {
   width: min(470px, calc(100vw - 40px));
 }
+dialog.sheet.medium {
+  width: min(600px, calc(100vw - 40px));
+}
 dialog.sheet.wide {
   width: min(980px, calc(100vw - 40px));
 }

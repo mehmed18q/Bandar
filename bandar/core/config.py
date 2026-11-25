@@ -28,6 +28,8 @@ DENSITIES = ("comfortable", "compact")
 STARTUP = ("restore", "manual")
 NOTIFICATIONS = ("always", "background", "off")
 CLOSE_ACTIONS = ("ask", "background", "quit")
+VIEWS = ("all", "pinned", "running", "problems", "stopped", "healthy", "connecting", "errors")
+UNGROUPED = "__ungrouped__"
 SORT_KEYS = ("", "name", "context", "namespace", "status", "uptime", "local", "remote", "restarts")
 KINDS = ("service", "pod", "deployment", "statefulset", "replicaset")
 KIND_PREFIX = {
@@ -70,6 +72,10 @@ DEFAULT_SETTINGS = {
     "sortDir": "asc",
     "sidebarCollapsed": False,
     "ungroupedCollapsed": False,
+    # The list view the window shows, restored on the next launch.
+    "view": "all",
+    "viewGroup": "",
+    "viewEnv": "",
 }
 _CHOICES = {
     "language": LANGUAGES,
@@ -79,6 +85,8 @@ _CHOICES = {
     "startup": STARTUP,
     "notifications": NOTIFICATIONS,
     "closeAction": CLOSE_ACTIONS,
+    "view": VIEWS,
+    "viewEnv": ENVIRONMENTS,
     "sortKey": SORT_KEYS,
     "sortDir": ("asc", "desc"),
 }
@@ -197,6 +205,9 @@ def normalize_settings(values) -> dict:
     for key in ("healthCheckInterval", "clusterCheckInterval"):
         if 0 < result[key] < 5:
             result[key] = 5
+    view_group = values.get("viewGroup")
+    if isinstance(view_group, str) and (view_group == UNGROUPED or _ID.match(view_group)):
+        result["viewGroup"] = view_group  # checked against the groups in normalize()
     for key in ("kubectl", "kubeconfig"):
         text = clean_text(values.get(key), 1024)
         if text or key == "kubeconfig":
@@ -338,6 +349,8 @@ def normalize(raw) -> dict:
     session = raw.get("session") if isinstance(raw.get("session"), dict) else {}
     running = session.get("running") if isinstance(session.get("running"), list) else []
     config["session"]["running"] = [sid for sid in dict.fromkeys(running) if sid in service_ids]
+    if config["settings"]["viewGroup"] not in group_ids | {UNGROUPED}:
+        config["settings"]["viewGroup"] = ""  # the remembered group was deleted
     return config
 
 

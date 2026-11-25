@@ -9,6 +9,7 @@
   (production, staging, testing, development, local, legacy) and emoji, including any pasted emoji.
   A tabbed picker with search (try "gold" or "chat") for services and groups.
 - When a local port is blocked by another program's outgoing connection, that program is named.
+- The selected view (All, Pinned, Problems, a group or an environment) is remembered across restarts.
 - Fixed: closing and immediately reopening an editor could reset it, so a service's own local port
   was reported as taken.
 

@@ -481,6 +481,25 @@
     run();
   }
 
+  // ------------------------------------------------------------------ remembered view
+
+  /* The selected menu entry (view, group or environment) survives a restart. */
+  function restoreView(settings) {
+    Object.assign(Store.state.ui, {
+      view: ViewModel.VIEWS[settings.view] ? settings.view : 'all',
+      group: settings.viewGroup || null,
+      env: settings.viewEnv || null,
+    });
+  }
+
+  function rememberView(state) {
+    const settings = state.config.settings;
+    const current = { view: state.ui.view, viewGroup: state.ui.group || '', viewEnv: state.ui.env || '' };
+    if (Object.entries(current).every(([key, value]) => settings[key] === value)) return;
+    Object.assign(settings, current);
+    call('settings.update', current);
+  }
+
   // ------------------------------------------------------------------ closing
 
   /* The window's close button: keep forwards running in the background, or quit. */
@@ -599,7 +618,10 @@
     Native.on('focus', (event) => Store.service(event.id) && actions.details(event.id));
     Native.on('close-request', askClose);
     wire();
-    Store.replace(await call('state'));
+    const snapshot = await call('state');
+    restoreView(snapshot.config.settings);
+    Store.replace(snapshot);
+    Store.subscribe(rememberView);
     setInterval(() => {
       list.tick();
       drawer.tick();

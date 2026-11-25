@@ -76,6 +76,26 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual((fresh["notifications"], fresh["closeAction"]), ("always", "ask"))
         self.assertEqual(cfg.normalize_settings({"language": "ar"})["language"], "ar")
 
+    def test_the_list_view_is_remembered_and_validated(self):
+        config = cfg.normalize(
+            {
+                "groups": [{"id": "g_1", "name": "gold"}],
+                "settings": {"view": "pinned", "viewGroup": "g_1", "viewEnv": "staging"},
+            }
+        )
+        self.assertEqual(
+            [config["settings"][k] for k in ("view", "viewGroup", "viewEnv")],
+            ["pinned", "g_1", "staging"],
+        )
+        stale = cfg.normalize(
+            {"settings": {"view": "nonsense", "viewGroup": "g_gone", "viewEnv": "moon"}}
+        )
+        self.assertEqual(
+            [stale["settings"][k] for k in ("view", "viewGroup", "viewEnv")], ["all", "", ""]
+        )
+        ungrouped = cfg.normalize({"settings": {"viewGroup": "__ungrouped__"}})
+        self.assertEqual(ungrouped["settings"]["viewGroup"], "__ungrouped__")
+
     def test_kubeconfig_location(self):
         home = Path.home()
         self.assertEqual(cfg.kubeconfig_path({}, {}), home / ".kube" / "config")

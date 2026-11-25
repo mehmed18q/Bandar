@@ -328,6 +328,7 @@
         preview();
       });
       f.elements.group.addEventListener('change', () => {
+        picker?.refresh();
         const fresh = f.elements.group.value === NEW_GROUP;
         dialog.querySelector('[data-field="newGroup"]').hidden = !fresh;
         if (fresh) f.elements.newGroup.focus();
@@ -382,7 +383,7 @@
       iconState = { value: data.icon || '', automatic: 'server' };
       Overlays.Sheet.open(dialog, template(data), { onClose: () => (editing = null) });
       bind();
-      picker = IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, () => {});
+      picker = IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, () => {}, () => Store.group(input('group').value)?.color || '');
       guessIcon();
       preview();
       loadNamespaces();

@@ -33,8 +33,12 @@ def interface_keys():
     keys += re.findall(r'data-t-(?:title|placeholder|aria)="([^"]+)"', html)
     keys += ["d", "h", "m", "s"]
     icons = (WEB / "js" / "icons.js").read_text()
-    keys += re.findall(r"\[\s*'([A-Z][^']*)',\s*'<", icons)  # generic icon names
-    keys += re.findall(r"^\s+\['([A-Z][^']*)', \[", icons, re.M)  # categories
+    keys += re.findall(r"^\s+\['([A-Z][^']*)', '", icons, re.M)  # emoji categories
+    keys += re.findall(r"section\('([^']+)'", icons)
+    data = (WEB / "js" / "icon-data.js").read_text()
+    payload = json.loads(data[data.index("{") : data.rindex("}") + 1])
+    keys += [title for title, _ in payload["brandCategories"]]
+    keys += [env["title"] for env in payload["environments"].values()]
     return list(dict.fromkeys(k.replace("\\'", "'") for k in keys if k))
 
 

@@ -37,7 +37,7 @@ SCENES = {
     "dark": "bandar.actions.settings({theme:'dark', language:'en'})",
     "fa": "bandar.actions.settings({theme:'light', language:'fa'})",
     "group-new": "bandar.actions.newGroup()",
-    "group-edit": "bandar.actions.editGroup(bandar.Store.state.config.groups[0].id)",
+    "group-edit": "bandar.actions.editGroup(bandar.Store.state.config.groups[0].id); setTimeout(() => document.querySelector('#group-dialog [data-icon-toggle]').click(), 300)",
     "service-new": "bandar.actions.newService()",
     "theme-panel": "document.querySelector('#theme-settings-button').click()",
     "language-menu": "document.querySelector('#language-button').click()",
@@ -47,6 +47,9 @@ SCENES = {
     "drawer": "bandar.actions.details(bandar.Store.state.config.services[1].id)",
     "pinned": "bandar.Store.ui({view: 'pinned'})",
     "all": "bandar.Store.ui({view: 'all'})",
+    "picker-logos": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); document.querySelector('#service-dialog [data-icon-tab=logos]').click(); }, 300)",
+    "picker-emoji": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); document.querySelector('#service-dialog [data-icon-tab=emoji]').click(); }, 300)",
+    "picker-search": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => { document.querySelector('#service-dialog [data-icon-toggle]').click(); const f = document.querySelector('#service-dialog [data-icon-filter]'); f.value = 'gold'; f.dispatchEvent(new Event('input')); }, 300)",
     "service-icons": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => document.querySelector('#service-dialog [data-icon-toggle]').click(), 300)",
 }
 
@@ -66,7 +69,8 @@ def main():
     config, _ = apply_import(plan_import(LIST, config), config)
     config["session"]["running"] = [s["id"] for s in config["services"]]
     config["services"][0]["pinned"] = True  # show a pin and the Pinned view
-    config["groups"][0]["icon"] = "kubernetes"
+    config["groups"][0]["icon"] = "emoji:🛒"
+    config["groups"][1]["icon"] = "env:staging"
     path.write_text(cfg.dumps(config))
     qt = QApplication.instance() or QApplication([])
     app = Application(path)

@@ -1,29 +1,44 @@
 /* Technology icons, the pin mark and the icon picker. */
 .tech-icon {
   position: relative;
-  display: inline-grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
   border-radius: 8px;
   flex-shrink: 0;
-  background: color-mix(in srgb, var(--brand, var(--accent)), var(--paper) 88%);
-  color: var(--brand, var(--accent));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand, var(--accent)), transparent 80%);
+  background: linear-gradient(150deg, color-mix(in srgb, var(--bg), white 14%), var(--bg) 70%);
+  color: var(--fg, #fff);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.08),
+    0 1px 2px rgb(0 0 0 / 0.12);
+  overflow: visible;
 }
 .tech-icon svg {
+  display: block;
   width: 17px;
   height: 17px;
 }
-.tech-icon.generic svg {
-  stroke-width: 1.8;
+.tech-icon.is-glyph svg,
+.tech-icon.is-env svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+.tech-icon.is-emoji {
+  background: color-mix(in srgb, var(--bg), var(--paper) 84%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg), transparent 70%);
+  font: 17px/1 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', var(--font);
+  letter-spacing: -0.04em;
 }
 body[data-theme='dark'] .tech-icon {
-  background: color-mix(in srgb, var(--brand, var(--accent)), var(--paper) 80%);
-  color: color-mix(in srgb, var(--brand, var(--accent)), white 30%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+    0 1px 2px rgb(0 0 0 / 0.4);
 }
-body[data-theme='dark'] .tech-icon[data-dark] {
-  color: var(--text);
+body[data-theme='dark'] .tech-icon.is-emoji {
+  background: color-mix(in srgb, var(--bg), var(--paper) 72%);
 }
 .tech-icon.small {
   width: 20px;
@@ -34,14 +49,20 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   width: 12px;
   height: 12px;
 }
+.tech-icon.small.is-emoji {
+  font-size: 12px;
+}
 .tech-icon.large {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
 }
 .tech-icon.large svg {
-  width: 22px;
-  height: 22px;
+  width: 23px;
+  height: 23px;
+}
+.tech-icon.large.is-emoji {
+  font-size: 23px;
 }
 .icon-badge {
   position: absolute;
@@ -52,7 +73,7 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--brand, var(--accent));
+  background: var(--bg);
   box-shadow: 0 0 0 2px var(--paper);
 }
 .icon-badge svg {
@@ -60,9 +81,6 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   height: 9px !important;
   fill: #fff;
   stroke: none;
-}
-.tech-icon.small .icon-badge {
-  display: none;
 }
 /* The status dot sits on the icon's corner in the list. */
 .icon-with-status {
@@ -104,7 +122,7 @@ body[data-theme='dark'] .tech-icon[data-dark] {
 .icon-picker-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .icon-picker-head .current {
   display: flex;
@@ -126,43 +144,63 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   font-weight: 500;
   font-size: 11.5px;
 }
-/* Beats the generic full-width field input rule. */
-.field .icon-picker-head input.input {
-  flex: 0 0 180px;
-  width: 180px;
-  min-height: 32px;
-  padding: 4px 9px;
-}
 .icon-picker-head .button {
   flex: none;
+}
+.icon-panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  overflow: hidden;
+}
+.icon-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--raised);
+}
+.field .icon-panel-bar input.input {
+  flex: 1;
+  width: auto;
+  min-height: 30px;
+  padding: 4px 9px;
 }
 .icon-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 220px;
+  gap: 6px;
+  max-height: 260px;
   overflow-y: auto;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-small);
-  background: var(--paper);
+  padding: 8px 10px 10px;
 }
 .icon-grid .icon-category {
+  margin-top: 4px;
   color: var(--faint);
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+[dir='rtl'] .icon-grid .icon-category {
+  letter-spacing: 0;
+  font-size: 11.5px;
+}
 .icon-grid .icon-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 4px;
+}
+.icon-grid .emoji-row {
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
 }
 .icon-choice {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   min-width: 0;
   padding: 4px 6px;
   border: 1px solid transparent;
@@ -170,7 +208,7 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   font-size: 11.5px;
   text-align: start;
 }
-.icon-choice span:last-child {
+.icon-choice > span:last-child {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -184,22 +222,46 @@ body[data-theme='dark'] .tech-icon[data-dark] {
   font-weight: 600;
 }
 .icon-choice .tech-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
 }
 .icon-choice .tech-icon svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
-.icon-choice .auto-glyph {
+.icon-choice .tech-icon.is-emoji {
+  font-size: 15px;
+}
+.auto-glyph {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 7px;
   border: 1.5px dashed var(--line);
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
+}
+.icon-picker-head .auto-glyph {
+  width: 30px;
+  height: 30px;
+}
+.icon-custom {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.field .icon-custom input.input {
+  flex: 1;
+  width: auto;
+  min-height: 32px;
+  font-size: 15px;
+}
+.icon-empty {
+  padding: 16px 4px;
+  color: var(--muted);
+  font-size: 12px;
 }

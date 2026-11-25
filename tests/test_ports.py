@@ -35,6 +35,16 @@ class PortTests(unittest.TestCase):
         self.assertEqual((result["ok"], result["code"]), (False, "not_kubectl"))
         self.assertEqual(ports.status(self.port), "busy")
 
+    def test_an_outgoing_connection_is_reported_as_the_owner(self):
+        client = socket.create_connection(("127.0.0.1", self.port))
+        try:
+            source = client.getsockname()[1]
+            owner = ports.owner(source)
+            self.assertEqual((owner["pid"], owner["outgoing"]), (os.getpid(), True))
+            self.assertEqual(ports.release(source)["code"], "not_kubectl")
+        finally:
+            client.close()
+
     def test_suggest_skips_configured_ports(self):
         free = ports.suggest(self.port + 1, {self.port + 1, self.port + 2})
         self.assertNotIn(free, {self.port, self.port + 1, self.port + 2})

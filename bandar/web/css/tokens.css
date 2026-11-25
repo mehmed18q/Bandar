@@ -110,7 +110,18 @@ body[data-theme='dark'] {
   --overlay: #0009;
 }
 
-/* Group colors adapt to the theme by mixing with the paper color. */
+/* Group colors, also used to tint icons that have no brand color. */
+:root {
+  --c-blue: #3b82f6;
+  --c-teal: #14b8a6;
+  --c-green: #22a55a;
+  --c-amber: #e0a00f;
+  --c-orange: #f97316;
+  --c-red: #e5484d;
+  --c-pink: #e94d9b;
+  --c-violet: #8b5cf6;
+  --c-slate: #64748b;
+}
 [data-color='blue'] {
   --group: #3b82f6;
 }

@@ -21,7 +21,7 @@
       return h`<li data-color="${color}">
         <button class="group-link" data-nav-group="${key}" aria-current="${current}" ${key === UNGROUPED ? '' : h`draggable="true" data-drag="group"`}
           title="${name}">
-          ${group?.icon ? Icons.tile(group.icon, 'small') : h`<span class="group-swatch"></span>`}<span class="group-label">${name}</span>
+          ${group?.icon ? Icons.tile(group.icon, { size: 'small', tint: group.color }) : h`<span class="group-swatch"></span>`}<span class="group-label">${name}</span>
           ${group?.pinned ? h`<span class="pin-mark">${icon('pin')}</span>` : ''}
           ${environment ? h`<span class="env small" data-env="${environment}" title="${t(ServiceList.ENV_LABELS[environment])}">${t(SHORT[environment])}</span>` : ''}
           <span class="group-health">${health.running ? h`<span class="status-dot" style="background:var(--${tone})"></span>` : ''}

@@ -102,7 +102,10 @@ _K8S_NAME = re.compile(r"^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$")
 _NAMESPACE = re.compile(r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 _PORT_NAME = re.compile(r"^(?=.*[a-z])[a-z0-9]([a-z0-9-]{0,13}[a-z0-9])?$")
 _ID = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
-_ICON = re.compile(r"^[a-z0-9-]{1,40}$")
+# A logo name, "i:<glyph>", "env:<environment>" or "emoji:<an emoji or two characters>".
+_ICON = re.compile(
+    r"^(?:[a-z0-9-]{1,40}|i:[a-z0-9-]{1,48}|env:[a-z]{1,16}|emoji:[^\s\x00-\x1f\x7f]{1,16})$"
+)
 
 
 class ConfigError(Exception):

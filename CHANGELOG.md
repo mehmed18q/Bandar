@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0 — 2026-11-25
+
+- Icons redesigned: logos sit centered on a tile in their brand color (dark glyphs on light brands),
+  and icons without a brand color take the group's color.
+- Far more choices: 187 technology logos (databases, messaging, infrastructure, cloud, observability,
+  languages, developer tools, apps and payments), 158 general icons from Lucide, environment icons
+  (production, staging, testing, development, local, legacy) and emoji, including any pasted emoji.
+  A tabbed picker with search (try "gold" or "chat") for services and groups.
+- When a local port is blocked by another program's outgoing connection, that program is named.
+- Fixed: closing and immediately reopening an editor could reset it, so a service's own local port
+  was reported as taken.
+
 ## 1.2.0 — 2026-11-25
 
 - Connectivity watchdog: every cluster in use is checked every few seconds and right after a network

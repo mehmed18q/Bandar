@@ -53,7 +53,7 @@ def service(**overrides):
         "namespace": "default",
         "kind": "service",
         "target": "ok-db",
-        "localPort": 47555,
+        "localPort": 25555,
         "remotePort": 5432,
         "address": "127.0.0.1",
         "extraArgs": [],

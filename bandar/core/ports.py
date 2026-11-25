@@ -54,8 +54,13 @@ def is_free(port: int, address: str = "127.0.0.1") -> bool:
     return status(port, address) == "free"
 
 
-def _listening_inodes(port: int) -> set:
-    inodes = set()
+def _socket_inodes(port: int) -> tuple:
+    """Inodes of sockets bound to local ``port``: ``(listening, other)``.
+
+    "Other" sockets are usually outgoing connections that picked ``port`` as
+    their source port; they block a listener just the same.
+    """
+    listening, other = set(), set()
     for table in ("/proc/net/tcp", "/proc/net/tcp6"):
         try:
             rows = Path(table).read_text().splitlines()[1:]
@@ -63,33 +68,36 @@ def _listening_inodes(port: int) -> set:
             continue
         for row in rows:
             fields = row.split()
-            if len(fields) < 10 or fields[3] != LISTEN:
+            if len(fields) < 10 or int(fields[1].rsplit(":", 1)[1], 16) != port:
                 continue
-            if int(fields[1].rsplit(":", 1)[1], 16) == port:
-                inodes.add(fields[9])
-    return inodes
+            if fields[9] != "0":
+                (listening if fields[3] == LISTEN else other).add(fields[9])
+    return listening, other
 
 
 def owner(port: int):
-    """Describe the process listening on ``port``: ``{pid, name, command, ours}``.
+    """Describe the process holding ``port``: ``{pid, name, command, ours, outgoing}``.
 
-    ``pid`` is ``None`` when the socket belongs to another user or the kernel.
-    Returns ``None`` when nothing listens on the port.
+    A listener is preferred; otherwise the owner of an outgoing connection using
+    ``port`` as its source port is reported (``outgoing``). ``pid`` is ``None``
+    when the socket belongs to another user or the kernel. ``None`` when unused.
     """
-    inodes = _listening_inodes(port)
-    if not inodes:
-        return None
-    targets = {f"socket:[{inode}]" for inode in inodes}
-    for entry in Path("/proc").iterdir():
-        if not entry.name.isdigit():
+    listening, other = _socket_inodes(port)
+    for inodes, outgoing in ((listening, False), (other, True)):
+        if not inodes:
             continue
-        try:
-            for descriptor in (entry / "fd").iterdir():
-                if os.readlink(descriptor) in targets:
-                    return _describe(int(entry.name))
-        except OSError:
-            continue
-    return {"pid": None, "name": "", "command": "", "ours": False}
+        targets = {f"socket:[{inode}]" for inode in inodes}
+        for entry in Path("/proc").iterdir():
+            if not entry.name.isdigit():
+                continue
+            try:
+                for descriptor in (entry / "fd").iterdir():
+                    if os.readlink(descriptor) in targets:
+                        return {**_describe(int(entry.name)), "outgoing": outgoing}
+            except OSError:
+                continue
+        return {"pid": None, "name": "", "command": "", "ours": False, "outgoing": outgoing}
+    return None
 
 
 def _describe(pid: int):
@@ -99,7 +107,7 @@ def _describe(pid: int):
         command = " ".join(part.decode(errors="replace") for part in argv if part)
     except OSError:
         name, command = "", ""
-    stale_forward = "kubectl" in name and "port-forward" in command
+    stale_forward = "kubectl" in name and "port-forward" in command  # never kill anything else
     return {"pid": pid, "name": name, "command": command[:400], "ours": stale_forward}
 
 
@@ -111,7 +119,7 @@ def release(port: int) -> dict:
     holder = owner(port)
     if not holder:
         return {"ok": True}
-    if not holder["ours"] or not holder["pid"]:
+    if not holder["ours"] or not holder["pid"] or holder.get("outgoing"):
         return {"ok": False, "code": "not_kubectl", "owner": holder}
     try:
         os.kill(holder["pid"], signal.SIGTERM)

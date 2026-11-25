@@ -12,7 +12,8 @@
     let editing = null;
     let color = 'blue';
     let environment = '';
-    let iconState = { value: '', automatic: '' };
+    let iconState = { value: '', automatic: null };
+    let picker = null;
 
     const envLabel = (env) => (env ? t(ServiceList.ENV_LABELS[env]) : t('Not set'));
 
@@ -64,7 +65,7 @@
       const checked = dialog.querySelectorAll('.member-list input:checked').length;
       const preview = dialog.querySelector('#group-preview');
       preview.dataset.color = color;
-      preview.innerHTML = h`${iconState.value ? Icons.tile(iconState.value, 'small') : ''}<strong>${form.elements.name.value.trim() || t('Group name')}</strong>
+      preview.innerHTML = h`${iconState.value ? Icons.tile(iconState.value, { size: 'small', tint: color }) : ''}<strong>${form.elements.name.value.trim() || t('Group name')}</strong>
         ${environment ? h`<span class="env" data-env="${environment}">${envLabel(environment)}</span>` : ''}
         <span class="muted">${t('{n} services', { n: I18n.num(checked) })}</span>`;
       const count = dialog.querySelector('#member-count');
@@ -78,12 +79,12 @@
       const used = new Set(Store.state.config.groups.map((g) => g.color));
       color = group?.color || COLORS.find((c) => !used.has(c)) || 'blue';
       environment = group?.environment || '';
-      iconState = { value: group?.icon || '', automatic: '' };
+      iconState = { value: group?.icon || '', automatic: null };
       const selected = new Set(preselect);
       for (const s of Store.state.config.services) if (id && s.group === id) selected.add(s.id);
       Overlays.Sheet.open(dialog, template(group, selected));
       const form = dialog.querySelector('form');
-      IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, refresh);
+      picker = IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, refresh, () => color);
       refresh();
       dialog.addEventListener('click', onClick);
       dialog.onclose = () => dialog.removeEventListener('click', onClick);
@@ -111,6 +112,7 @@
       if (colorButton) {
         color = colorButton.dataset.pickColor;
         dialog.querySelectorAll('[data-pick-color]').forEach((b) => b.setAttribute('aria-pressed', String(b === colorButton)));
+        picker?.refresh();
       } else if (envButton) {
         environment = envButton.dataset.pickEnv;
         dialog.querySelectorAll('[data-pick-env]').forEach((b) => b.setAttribute('aria-pressed', String(b === envButton)));

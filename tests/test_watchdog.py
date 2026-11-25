@@ -51,7 +51,7 @@ class WatchdogTests(unittest.TestCase):
         wait_until(lambda: not self.watchdog._probes, 10)
 
     def test_vpn_drop_is_detected_retried_and_recovered(self):
-        forward = self.start("s_vpn", 47801)
+        forward = self.start("s_vpn", 25801)
         self.offline.write_text("down")
         # kubectl itself notices nothing: the tunnel still looks healthy.
         wait_until(lambda: False, 0.5)
@@ -70,7 +70,7 @@ class WatchdogTests(unittest.TestCase):
         self.assertTrue(self.recoveries, "the recovery is announced")
 
     def test_a_single_slow_answer_does_not_drop_tunnels(self):
-        forward = self.start("s_slow", 47802)
+        forward = self.start("s_slow", 25802)
         self.offline.write_text("slow")
         self.check()
         self.assertEqual(forward.state, State.HEALTHY)
@@ -78,8 +78,8 @@ class WatchdogTests(unittest.TestCase):
         self.assertTrue(wait_until(lambda: forward.state == State.RETRYING))
 
     def test_only_the_unreachable_context_is_affected(self):
-        main = self.start("s_main", 47803, context="main")
-        other = self.start("s_other", 47804, context="prod")
+        main = self.start("s_main", 25803, context="main")
+        other = self.start("s_other", 25804, context="prod")
         self.offline.write_text("down")
         self.values = settings(clusterCheckInterval=10)
         self.watchdog._probe("prod")
@@ -89,7 +89,7 @@ class WatchdogTests(unittest.TestCase):
 
     def test_tunnels_are_rebuilt_after_the_network_changes(self):
         """A quick drop-and-return (sleep, Wi-Fi, VPN) leaves dead connections behind."""
-        forward = self.start("s_change", 47805)
+        forward = self.start("s_change", 25805)
         before = forward.healthy_since
         self.values = settings(clusterCheckInterval=10)
         self.watchdog.network_changed("resumed")

@@ -24,13 +24,13 @@ from bandar.core.commands import apply_import, plan_import  # noqa: E402
 from bandar.ui.window import MainWindow  # noqa: E402
 
 LIST = """[orders @production]
-orders-postgresql = kubectl --context main -n orders-api port-forward svc/ok-orders-psql 47432:5432
-orders-redis = kubectl --context main -n orders-api port-forward svc/flaky-orders-redis 47379:6379
+orders-postgresql = kubectl --context main -n orders-api port-forward svc/ok-orders-psql 25432:5432
+orders-redis = kubectl --context main -n orders-api port-forward svc/flaky-orders-redis 25379:6379
 [chat-stage @staging]
-chat-postgresql = kubectl --context prod -n chat port-forward svc/ok-chat-psql 47434:5432
-chat-redis = kubectl --context prod -n chat port-forward svc/auth-chat-redis 47381:6379
+chat-postgresql = kubectl --context prod -n chat port-forward svc/ok-chat-psql 25434:5432
+chat-redis = kubectl --context prod -n chat port-forward svc/auth-chat-redis 25381:6379
 []
-core-postgresql = kubectl port-forward svc/missing-core 47436:5432
+core-postgresql = kubectl port-forward svc/missing-core 25436:5432
 """
 
 

@@ -107,7 +107,7 @@
         <div class="select-cell"><input type="checkbox" class="check" data-select ${selected ? 'checked' : ''} aria-label="${t('Select {name}', { name: service.name })}" /></div>
         <div class="service-name-cell">
           ${sorted ? '' : h`<span class="grip" draggable="true" data-drag="service" title="${t('Drag to reorder or move to another group')}">${icon('grip')}</span>`}
-          <span class="icon-with-status">${Icons.tile(Icons.forService(service))}
+          <span class="icon-with-status">${Icons.tile(Icons.forService(service), { tint: Store.group(service.group)?.color })}
             <span class="status-dot" style="background:var(--${tone === 'info' ? 'accent' : tone === 'idle' ? 'idle' : tone})"></span></span>
           <div class="service-label">
             <span class="service-name" data-act="details" title="${service.note || service.name}">${raw(highlight(service.name, query))}${service.pinned ? h` <span class="pin-mark" title="${t('Pinned')}">${icon('pin')}</span>` : ''}${service.autoStart ? h` <span class="auto-mark" title="${t('Starts automatically')}">AUTO</span>` : ''}</span>
@@ -152,7 +152,7 @@
         <div class="group-title">
           ${group ? h`<span class="grip" draggable="true" data-drag="group" title="${t('Drag to reorder groups')}">${icon('grip')}</span>` : ''}
           <button class="caret-button" data-act="collapse" aria-expanded="${!collapsed}" title="${collapsed ? t('Expand') : t('Collapse')}">${icon('chevron')}</button>
-          ${group?.icon ? Icons.tile(group.icon, 'small') : ''}
+          ${group?.icon ? Icons.tile(group.icon, { size: 'small', tint: group.color }) : ''}
           <span class="group-name ${group ? '' : 'ungrouped'}">${group ? group.name : t('Ungrouped')}</span>
           ${group?.pinned ? h`<span class="pin-mark" title="${t('Pinned')}">${icon('pin')}</span>` : ''}
           ${group?.environment ? h`<span class="env" data-env="${group.environment}">${t(ENV_LABELS[group.environment])}</span>` : ''}

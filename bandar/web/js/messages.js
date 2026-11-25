@@ -116,6 +116,7 @@
   function ownerText(owner) {
     if (!owner) return '';
     if (!owner.pid) return t('another user or a system service');
+    if (owner.outgoing) return t('an outgoing connection of {name} (PID {pid})', { name: owner.name || '?', pid: owner.pid });
     if (owner.ours) return t('a leftover kubectl port-forward (PID {pid})', { pid: owner.pid });
     return t('{name} (PID {pid})', { name: owner.name || '?', pid: owner.pid });
   }

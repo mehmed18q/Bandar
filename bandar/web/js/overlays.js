@@ -121,7 +121,12 @@
     open(dialog, content, { onClose } = {}) {
       dialog.innerHTML = h`${content}`;
       I18n.apply(dialog);
-      dialog.onclose = () => onClose?.();
+      // The close event is asynchronous: when a dialog is closed and reopened at once,
+      // the old session's close arrives late and must not end the new session.
+      const session = (dialog.bandarSession = (dialog.bandarSession || 0) + 1);
+      dialog.onclose = () => {
+        if (dialog.bandarSession === session && !dialog.open) onClose?.();
+      };
       dialog.oncancel = null;
       dialog.querySelectorAll('[data-dismiss]').forEach((button) => {
         button.onclick = (event) => {

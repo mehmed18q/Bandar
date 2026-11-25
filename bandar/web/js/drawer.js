@@ -91,7 +91,7 @@
           <span class="problem-title">${t('Recovered')}</span><span class="problem-hint">${t('Last problem: {title}', { title: info.title })}</span></div></div>`;
       }
       drawer.innerHTML = h`<header class="drawer-head">
-          <span class="icon-with-status">${Icons.tile(Icons.forService(service), 'large')}
+          <span class="icon-with-status">${Icons.tile(Icons.forService(service), { size: 'large', tint: group?.color })}
             <span class="status-dot" style="background:var(--${tone === 'info' ? 'accent' : tone === 'idle' ? 'idle' : tone})"></span></span>
           <div class="title"><h2 title="${service.name}">${service.name}</h2><span class="muted mono">${Messages.resourceText(service)}</span></div>
           <button class="icon-button" data-drawer="close" title="${t('Close (Esc)')}">${icon('close')}</button>

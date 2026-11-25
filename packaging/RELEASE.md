@@ -7,7 +7,7 @@ container, so it needs no newer GLIBC than 2.39 and runs on 24.04 and later.
 
 ```bash
 python3 scripts/build_ubuntu24.py        # Docker: builds the image, the .deb, and starts the bundle under Xvfb
-sudo apt install ./dist/bandar_1.2.0-1_amd64.deb
+sudo apt install ./dist/bandar_1.3.0-1_amd64.deb
 ```
 
 `scripts/build_deb.py --local` builds a package on the host for that machine only.
@@ -25,7 +25,7 @@ One-time setup:
    stay the same so installed systems keep receiving updates. Never commit it.
 4. **Actions secrets**: `APT_SIGNING_KEY` (armored private key) and `APT_SIGNING_PASSPHRASE`.
    **Actions variable**: `APT_SIGNING_FINGERPRINT` (full fingerprint).
-5. Run the workflow with `publish` unchecked to verify, then push a tag such as `v1.2.0-1`
+5. Run the workflow with `publish` unchecked to verify, then push a tag such as `v1.3.0-1`
    (it must match `bandar.VERSION` and `DEBIAN_REVISION`) to publish.
 
 The site source is `site/`; `scripts/create_apt_repository.py` fills in the version and the

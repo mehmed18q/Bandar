@@ -45,6 +45,9 @@ SCENES = {
     "settings": "bandar.actions.openSettings()",
     "import": "bandar.actions.openImport()",
     "drawer": "bandar.actions.details(bandar.Store.state.config.services[1].id)",
+    "pinned": "bandar.Store.ui({view: 'pinned'})",
+    "all": "bandar.Store.ui({view: 'all'})",
+    "service-icons": "bandar.actions.editService(bandar.Store.state.config.services[2].id); setTimeout(() => document.querySelector('#service-dialog [data-icon-toggle]').click(), 300)",
 }
 
 
@@ -62,6 +65,8 @@ def main():
     )
     config, _ = apply_import(plan_import(LIST, config), config)
     config["session"]["running"] = [s["id"] for s in config["services"]]
+    config["services"][0]["pinned"] = True  # show a pin and the Pinned view
+    config["groups"][0]["icon"] = "kubernetes"
     path.write_text(cfg.dumps(config))
     qt = QApplication.instance() or QApplication([])
     app = Application(path)

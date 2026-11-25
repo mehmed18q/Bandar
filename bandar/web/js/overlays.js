@@ -131,6 +131,21 @@
       });
       if (!dialog.open) dialog.showModal();
       Menu.close();
+      if (!dialog.dataset.backdrop) {
+        dialog.dataset.backdrop = '1';
+        // Only a press that starts *and* ends outside counts: selecting text that ends
+        // outside the box must not close it.
+        const outside = (event) => {
+          const box = dialog.getBoundingClientRect();
+          return event.target === dialog && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom);
+        };
+        let pressed = false;
+        dialog.addEventListener('pointerdown', (event) => (pressed = outside(event)));
+        dialog.addEventListener('click', (event) => {
+          if (pressed && outside(event)) dialog.close();
+          pressed = false;
+        });
+      }
     },
     head(iconName, title, subtitle = '', danger = false) {
       return h`<header class="sheet-head ${danger ? 'danger' : ''}">

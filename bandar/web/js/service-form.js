@@ -25,6 +25,8 @@
     let targets = [];
     let portStatus = null;
     let generation = 0;
+    let iconState = { value: '', automatic: 'server' };
+    let picker = null;
 
     const form = () => dialog.querySelector('form');
     const input = (name) => form().elements[name];
@@ -50,6 +52,7 @@
                 <option value="">${t('No group')}</option>
                 ${groups.map((g) => h`<option value="${g.id}" ${g.id === data.group ? 'selected' : ''}>${g.name}</option>`)}
                 <option value="${NEW_GROUP}">${t('+ New group…')}</option></select>`)}
+            <div class="field span-2"><span class="label">${t('Icon')}</span>${IconPicker.markup(data.icon || '', '')}</div>
             <label class="field span-2" data-field="newGroup" hidden><span class="label">${t('New group name')}</span>
               <input name="newGroup" autocomplete="off" maxlength="64" /><span class="error-text"></span></label>
             ${field('context', t('Context'), h`<input name="context" class="ltr-input" list="dl-contexts" value="${data.context}" autocomplete="off" spellcheck="false"
@@ -105,6 +108,7 @@
         extraArgs: f.elements.extraArgs.value,
         note: f.elements.note.value,
         autoStart: f.elements.autoStart.checked,
+        icon: iconState.value,
       };
     }
 
@@ -286,6 +290,7 @@
       input('extraArgs').value = joinArgs(f.extraArgs);
       if (!input('name').value.trim()) input('name').value = f.target;
       setKind(f.kind);
+      guessIcon();
       status.className = 'paste-status ok';
       status.textContent = t('Form filled ✓');
       checkPort();
@@ -302,12 +307,19 @@
       preview();
     }
 
+    function guessIcon() {
+      const v = values();
+      iconState.automatic = Icons.guess({ name: v.name, target: v.target, remotePort: Number(v.remotePort) || v.remotePort, localPort: Number(v.localPort) });
+      picker?.refresh();
+    }
+
     function bind() {
       const f = form();
       f.addEventListener('input', (event) => {
         const name = event.target.name;
         event.target.closest('.field')?.classList.remove('invalid');
         if (name === 'paste') return parsePaste();
+      if (name === 'name' || name === 'target' || name === 'remotePort' || name === 'localPort') guessIcon();
         if (name === 'context') loadNamespaces();
         if (name === 'namespace') loadTargets();
         if (name === 'target') suggestPorts();
@@ -364,11 +376,14 @@
       targets = [];
       portStatus = null;
       const service = id ? Store.service(id) : null;
-      const base = { name: '', group, context: '', namespace: '', kind: 'service', target: '', remotePort: '', localPort: '', address: '127.0.0.1', extraArgs: '', autoStart: false, note: '' };
+      const base = { name: '', group, context: '', namespace: '', kind: 'service', target: '', remotePort: '', localPort: '', address: '127.0.0.1', extraArgs: '', autoStart: false, note: '', icon: '' };
       const data = service ? { ...service, extraArgs: joinArgs(service.extraArgs) } : { ...base, ...(prefill || {}) };
       kind = data.kind;
+      iconState = { value: data.icon || '', automatic: 'server' };
       Overlays.Sheet.open(dialog, template(data), { onClose: () => (editing = null) });
       bind();
+      picker = IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, () => {});
+      guessIcon();
       preview();
       loadNamespaces();
       if (data.localPort) checkPort();

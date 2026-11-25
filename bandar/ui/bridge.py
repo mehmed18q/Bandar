@@ -38,6 +38,7 @@ class Bridge(QObject):
             "service.move": application.move_service,
             "service.assign": application.assign_group,
             "service.sort": application.sort_services,
+            "pin.set": application.pin,
             "group.save": application.save_group,
             "group.delete": application.delete_group,
             "group.move": application.move_group,

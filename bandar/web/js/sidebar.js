@@ -14,13 +14,15 @@
 
     const SHORT = { production: 'PROD', staging: 'STG', development: 'DEV', testing: 'TEST', legacy: 'OLD' };
 
-    function groupItem(key, name, color, services, current, environment = '') {
+    function groupItem(key, name, color, services, current, group = null) {
+      const environment = group?.environment || '';
       const health = ViewModel.health(Store.state, services);
       const tone = health.errors ? 'err' : health.connecting ? 'warn' : health.healthy ? 'ok' : 'idle';
       return h`<li data-color="${color}">
         <button class="group-link" data-nav-group="${key}" aria-current="${current}" ${key === UNGROUPED ? '' : h`draggable="true" data-drag="group"`}
           title="${name}">
-          <span class="group-swatch"></span><span class="group-label">${name}</span>
+          ${group?.icon ? Icons.tile(group.icon, 'small') : h`<span class="group-swatch"></span>`}<span class="group-label">${name}</span>
+          ${group?.pinned ? h`<span class="pin-mark">${icon('pin')}</span>` : ''}
           ${environment ? h`<span class="env small" data-env="${environment}" title="${t(ServiceList.ENV_LABELS[environment])}">${t(SHORT[environment])}</span>` : ''}
           <span class="group-health">${health.running ? h`<span class="status-dot" style="background:var(--${tone})"></span>` : ''}
           ${I18n.num(health.running)}/${I18n.num(health.total)}</span>
@@ -42,7 +44,7 @@
         title="${t('Show only {env} groups', { env: t(ServiceList.ENV_LABELS[env]) })}">${t(SHORT[env])}</button>`)}`;
       const ungrouped = state.config.services.filter((s) => !s.group || !Store.group(s.group));
       groups.innerHTML = h`${state.config.groups.map((group) =>
-        groupItem(group.id, group.name, group.color, state.config.services.filter((s) => s.group === group.id), state.ui.group === group.id, group.environment)
+        groupItem(group.id, group.name, group.color, state.config.services.filter((s) => s.group === group.id), state.ui.group === group.id, group)
       )}${ungrouped.length || !state.config.groups.length ? groupItem(UNGROUPED, t('Ungrouped'), 'slate', ungrouped, state.ui.group === UNGROUPED) : ''}`;
 
       const info = state.meta.kube || {};

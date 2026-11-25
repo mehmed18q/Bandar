@@ -114,6 +114,8 @@ RULES = (
         r"no route to host",
         r"connection refused",
         r"context deadline exceeded",
+        r"timeout exceeded",
+        r"handshake timeout",
         r"the server is currently unable",
         r"service unavailable",
     ),
@@ -148,6 +150,18 @@ def summarize(text: str) -> str:
         if re.search(r"error|unable|fail|denied|forbidden|not found|refused|lost", line, re.I):
             return line[:600]
     return lines[-1][:600] if lines else ""
+
+
+_UNREACHABLE_NOW = re.compile(
+    r"no route to host|network is unreachable|no such host|connection refused|"
+    r"server misbehaving|name resolution",
+    re.IGNORECASE,
+)
+
+
+def definitely_unreachable(text: str) -> bool:
+    """Errors that prove the cluster cannot be reached (as opposed to a slow answer)."""
+    return bool(_UNREACHABLE_NOW.search(text))
 
 
 def runtime_event(line: str):

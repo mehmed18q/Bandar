@@ -32,6 +32,9 @@ def interface_keys():
     keys += [k.strip().replace("&amp;", "&") for k in re.findall(r"data-t>([^<]+)<", html)]
     keys += re.findall(r'data-t-(?:title|placeholder|aria)="([^"]+)"', html)
     keys += ["d", "h", "m", "s"]
+    icons = (WEB / "js" / "icons.js").read_text()
+    keys += re.findall(r"\[\s*'([A-Z][^']*)',\s*'<", icons)  # generic icon names
+    keys += re.findall(r"^\s+\['([A-Z][^']*)', \[", icons, re.M)  # categories
     return list(dict.fromkeys(k.replace("\\'", "'") for k in keys if k))
 
 

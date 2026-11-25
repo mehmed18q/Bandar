@@ -7,6 +7,7 @@
 
   const VIEWS = {
     all: () => true,
+    pinned: () => true, // decided per service and group in sections()
     running: (rt) => ACTIVE.has(rt.state),
     problems: (rt) => rt.state === 'error' || rt.state === 'retrying',
     stopped: (rt) => rt.state === 'stopped' || rt.state === 'stopping',
@@ -39,11 +40,15 @@
     };
   }
 
+  /** Pinned directly, or through its group. */
+  const isPinned = (service) => service.pinned || !!Store.group(service.group)?.pinned;
+
   function counts(state) {
-    const result = { all: 0, running: 0, problems: 0, stopped: 0, healthy: 0, connecting: 0, errors: 0 };
+    const result = { all: 0, pinned: 0, running: 0, problems: 0, stopped: 0, healthy: 0, connecting: 0, errors: 0 };
     for (const service of state.config.services) {
       const runtime = Store.runtime(service.id);
-      for (const [view, test] of Object.entries(VIEWS)) if (test(runtime)) result[view] += 1;
+      for (const [view, test] of Object.entries(VIEWS)) if (view !== 'pinned' && test(runtime)) result[view] += 1;
+      if (isPinned(service)) result.pinned += 1;
     }
     return result;
   }
@@ -121,7 +126,7 @@
       if (env && (group?.environment || '') !== env) continue;
       const visible = services
         .map((service) => describe(state, service))
-        .filter((item) => VIEWS[view](item.runtime) && matches(item, group, terms));
+        .filter((item) => (view === 'pinned' ? isPinned(item.service) : VIEWS[view](item.runtime)) && matches(item, group, terms));
       // Empty groups stay visible as drop targets unless the list is being filtered.
       if (!visible.length && (filtering || key === UNGROUPED)) continue;
       result.push({
@@ -139,5 +144,5 @@
     return sections(state).flatMap((section) => section.items.map((item) => item.service.id));
   }
 
-  window.ViewModel = { UNGROUPED, VIEWS, ACTIVE, contextOf, namespaceOf, describe, counts, health, sections, visibleIds };
+  window.ViewModel = { UNGROUPED, VIEWS, ACTIVE, isPinned, contextOf, namespaceOf, describe, counts, health, sections, visibleIds };
 })();

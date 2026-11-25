@@ -2,6 +2,8 @@
 [shop @production]
 shop-postgresql = kubectl --context prod -n shop port-forward svc/ok-shop-psql 47432:5432
 shop-redis = kubectl --context prod -n shop port-forward svc/flaky-shop-redis 47379:6379
+sessions-redis-cluster = kubectl --context prod -n shop port-forward svc/ok-sessions-redis-cluster 47390:6379
+events-kafka = kubectl --context prod -n shop port-forward svc/ok-events-kafka 47392:9092
 
 [shop-stage @staging]
 shop-stage-postgresql = kubectl --context stage -n shop-stage port-forward svc/ok-stage-psql 47433:5432

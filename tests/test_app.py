@@ -34,7 +34,11 @@ class ApplicationTests(unittest.TestCase):
         self.folder.cleanup()
 
     def saved(self):
-        wait_until(lambda: json.loads(self.path.read_text()) == self.app.config, 4)
+        """The file once it matches the in-memory configuration (writes are asynchronous)."""
+        self.assertTrue(
+            wait_until(lambda: json.loads(self.path.read_text()) == self.app.config, 10),
+            "the configuration was not saved",
+        )
         return json.loads(self.path.read_text())
 
     def add(self, name, port, **extra):

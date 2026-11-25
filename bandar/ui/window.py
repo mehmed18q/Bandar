@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from PySide6.QtCore import QSettings, QUrl
+from PySide6.QtCore import QSettings, QTimer, QUrl
 from PySide6.QtGui import QIcon
 from PySide6.QtWebChannel import QWebChannel
 from PySide6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings
@@ -18,6 +18,7 @@ from bandar.ui.tray import Tray
 from bandar.ui.web import LocalOnly, Page, View
 
 log = logging.getLogger(__name__)
+NOTICE_BATCH_MS = 1500  # failures arriving together are announced together
 
 
 class MainWindow(QMainWindow):
@@ -54,6 +55,11 @@ class MainWindow(QMainWindow):
         if self.tray:
             self.tray.show()
         self.notifier = Notifier(self.tray, self)
+        self._pending_notices = []
+        self._notice_batch = QTimer(self)
+        self._notice_batch.setSingleShot(True)
+        self._notice_batch.setInterval(NOTICE_BATCH_MS)
+        self._notice_batch.timeout.connect(self._flush_notices)
         self.notifier.activated.connect(self._notification_clicked)
         application.notice.connect(self._notice)
         self.settings_changed(application.settings())
@@ -143,23 +149,50 @@ class MainWindow(QMainWindow):
         self.state.sync()
 
     def _notice(self, notice):
-        """System notifications for forwards that drop, fail or come back."""
-        code = notice.get("code")
-        if code not in {"forward_failed", "forward_recovered"}:
+        """Queue failure/recovery notices; a burst (a VPN dropping) becomes one notification."""
+        if notice.get("code") not in {"forward_failed", "forward_recovered"}:
             return
         mode = self.app.settings()["notifications"]
-        focused = self.isVisible() and self.isActiveWindow()
-        if mode == "off" or (mode == "background" and focused):
+        if mode == "off" or (mode == "background" and self.isVisible() and self.isActiveWindow()):
             return
-        language = self.app.settings()["language"]
-        kind = notice.get("kind", "recovered" if code == "forward_recovered" else "error")
-        detail = (notice.get("error") or {}).get("detail", "") if code == "forward_failed" else ""
-        body = text(language, kind) + (f"\n{detail}" if detail else "")
-        urgency = {"lost": "normal", "recovered": "low"}.get(kind, "critical")
-        self.notifier.notify(notice["id"], kind, notice["service"], body, language, urgency)
+        self._pending_notices.append(notice)
+        self._notice_batch.start()
 
-    def _notification_clicked(self, sid, action):
+    def _flush_notices(self):
+        notices, self._pending_notices = self._pending_notices, []
+        language = self.app.settings()["language"]
+        by_kind = {}
+        for notice in notices:
+            kind = notice.get(
+                "kind", "recovered" if notice["code"] == "forward_recovered" else "error"
+            )
+            by_kind.setdefault(kind, []).append(notice)
+        for kind, group in by_kind.items():
+            ids = list(dict.fromkeys(n["id"] for n in group))
+            names = list(dict.fromkeys(n["service"] for n in group))
+            codes = {
+                (n.get("error") or {}).get("code") for n in group if n["code"] == "forward_failed"
+            }
+            headline = (
+                text(language, "unreachable")
+                if codes == {"api_unreachable"}
+                else text(language, kind)
+            )
+            if len(ids) == 1:
+                detail = (
+                    (group[0].get("error") or {}).get("detail", "") if kind != "recovered" else ""
+                )
+                title, body = names[0], headline + (f"\n{detail}" if detail else "")
+            else:
+                shown = ", ".join(names[:5]) + ("…" if len(names) > 5 else "")
+                title = text(language, "many").format(n=len(ids))
+                body = f"{headline}\n{shown}"
+            urgency = {"lost": "normal", "recovered": "low"}.get(kind, "critical")
+            self.notifier.notify(ids, kind, title, body, language, urgency)
+
+    def _notification_clicked(self, ids, action):
         if action == "retry":
-            self.app.restart({"ids": [sid]})
+            self.app.restart({"ids": ids})
         self.bring_to_front()
-        self.bridge.focus_service(sid)
+        if len(ids) == 1:
+            self.bridge.focus_service(ids[0])

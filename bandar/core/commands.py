@@ -330,6 +330,8 @@ def apply_import(plan: ImportPlan, config: dict) -> tuple:
             "name": entry.name,
             "group": group_id,
             "autoStart": False,
+            "pinned": False,
+            "icon": "",
             "note": "",
             **entry.fields,
         }

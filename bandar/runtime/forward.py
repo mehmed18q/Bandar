@@ -57,6 +57,15 @@ class State(StrEnum):
 
 
 ACTIVE = {State.STARTING, State.HEALTHY, State.RETRYING}
+# Failures that a reachable cluster can cure; on recovery they are retried at once.
+NETWORK_PROBLEMS = {
+    "api_unreachable",
+    "connection_lost",
+    "start_timeout",
+    "listener_lost",
+    "exited",
+    "unknown",
+}
 PORT_PROBLEMS = {
     "busy": "port_in_use",
     "denied": "port_denied",
@@ -202,6 +211,39 @@ class Forward(QObject):
             self.restart(resolved_context, count=False)
         else:
             self.changed.emit(self.id)
+
+    def lose(self, problem: Problem):
+        """The cluster stopped answering (e.g. the VPN dropped): rebuild the tunnel.
+
+        kubectl keeps a dead connection open without printing anything, so the
+        watchdog tells us instead; the usual failure path then retries and notifies.
+        """
+        if not self.desired or self._fatal is not None or not self._process:
+            return
+        if self.state in (State.HEALTHY, State.STARTING):
+            self._fatal = problem
+            self._log(
+                "warn", f"The cluster is unreachable ({problem.detail}); rebuilding the tunnel"
+            )
+            self._terminate()
+
+    def hurry(self):
+        """Retry now instead of waiting out the backoff: the cluster answers again."""
+        if self.state == State.RETRYING and (self.error or {}).get("code") in NETWORK_PROBLEMS:
+            self._log("info", "The cluster is reachable again; retrying now")
+            self._retry_timer.stop()
+            self._retry_due()
+
+    def refresh(self, since: float):
+        """Rebuild a healthy tunnel that predates a network change (its connection may be dead)."""
+        if self.state == State.HEALTHY and self.healthy_since and self.healthy_since < since:
+            self._log("info", "The network changed; rebuilding the tunnel")
+            self.restart()
+
+    @property
+    def context_key(self) -> str:
+        """The kube context this tunnel uses ("" means kubectl's current context)."""
+        return self.service["context"] or self.context or ""
 
     def refuse(self, problem: Problem):
         """Record a problem detected before launch (e.g. a port clash between services)."""

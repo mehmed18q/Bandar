@@ -52,7 +52,9 @@ def _write_if_changed(path: Path, data: bytes) -> bool:
         return False
 
 
-def register_source_run(root: Path, data_home: Path | None = None) -> bool:
+def register_source_run(
+    root: Path, data_home: Path | None = None, system: Path = Path("/usr/share/applications")
+) -> bool:
     """Install or refresh the per-user desktop entry and icon. Returns True if anything changed.
 
     Skipped for frozen builds and when a system package already provides the entry.
@@ -60,7 +62,7 @@ def register_source_run(root: Path, data_home: Path | None = None) -> bool:
     launcher = root / "bandar.sh"
     if getattr(sys, "frozen", False) or not launcher.is_file():
         return False
-    if Path(f"/usr/share/applications/{APP_ID}.desktop").exists():
+    if (system / f"{APP_ID}.desktop").exists():
         return False
     data = data_home or Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
     entry = _write_if_changed(

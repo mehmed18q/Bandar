@@ -107,9 +107,10 @@
         <div class="select-cell"><input type="checkbox" class="check" data-select ${selected ? 'checked' : ''} aria-label="${t('Select {name}', { name: service.name })}" /></div>
         <div class="service-name-cell">
           ${sorted ? '' : h`<span class="grip" draggable="true" data-drag="service" title="${t('Drag to reorder or move to another group')}">${icon('grip')}</span>`}
-          <span class="status-dot" style="background:var(--${tone === 'info' ? 'accent' : tone === 'idle' ? 'idle' : tone})"></span>
+          <span class="icon-with-status">${Icons.tile(Icons.forService(service))}
+            <span class="status-dot" style="background:var(--${tone === 'info' ? 'accent' : tone === 'idle' ? 'idle' : tone})"></span></span>
           <div class="service-label">
-            <span class="service-name" data-act="details" title="${service.note || service.name}">${raw(highlight(service.name, query))}${service.autoStart ? h` <span class="auto-mark" title="${t('Starts automatically')}">AUTO</span>` : ''}</span>
+            <span class="service-name" data-act="details" title="${service.note || service.name}">${raw(highlight(service.name, query))}${service.pinned ? h` <span class="pin-mark" title="${t('Pinned')}">${icon('pin')}</span>` : ''}${service.autoStart ? h` <span class="auto-mark" title="${t('Starts automatically')}">AUTO</span>` : ''}</span>
             <span class="service-target" title="${resource}">${raw(highlight(resource, query))}</span>
           </div>
         </div>
@@ -151,7 +152,9 @@
         <div class="group-title">
           ${group ? h`<span class="grip" draggable="true" data-drag="group" title="${t('Drag to reorder groups')}">${icon('grip')}</span>` : ''}
           <button class="caret-button" data-act="collapse" aria-expanded="${!collapsed}" title="${collapsed ? t('Expand') : t('Collapse')}">${icon('chevron')}</button>
+          ${group?.icon ? Icons.tile(group.icon, 'small') : ''}
           <span class="group-name ${group ? '' : 'ungrouped'}">${group ? group.name : t('Ungrouped')}</span>
+          ${group?.pinned ? h`<span class="pin-mark" title="${t('Pinned')}">${icon('pin')}</span>` : ''}
           ${group?.environment ? h`<span class="env" data-env="${group.environment}">${t(ENV_LABELS[group.environment])}</span>` : ''}
           <span class="group-count">${t('{n} services', { n: I18n.num(health.total) })}</span>
           ${group?.note ? h`<span class="muted truncate" title="${group.note}">· ${group.note}</span>` : ''}
@@ -298,6 +301,11 @@
     });
 
     body.addEventListener('click', (event) => {
+      const groupRow = event.target.closest('.group-row');
+      if (groupRow && !event.target.closest('button, input, .grip')) {
+        actions.collapse(groupRow.dataset.groupRow);
+        return;
+      }
       const row = event.target.closest('.service-row');
       if (!row || event.target.closest('button, input, a, .problem')) return;
       if (event.ctrlKey || event.metaKey) {
@@ -367,6 +375,7 @@
         s: () => actions.forward(running ? 'stop' : 'start', [id]),
         r: () => running && actions.forward('restart', [id]),
         c: () => actions.copyAddress(id),
+        p: () => actions.pin([id], [], !Store.service(id)?.pinned),
         ContextMenu: () => actions.serviceMenu(id, row.querySelector('[data-act="menu"]')),
       };
       const run = keys[event.key] || keys[event.key.toLowerCase()];

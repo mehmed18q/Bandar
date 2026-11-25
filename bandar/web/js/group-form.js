@@ -12,6 +12,7 @@
     let editing = null;
     let color = 'blue';
     let environment = '';
+    let iconState = { value: '', automatic: '' };
 
     const envLabel = (env) => (env ? t(ServiceList.ENV_LABELS[env]) : t('Not set'));
 
@@ -36,6 +37,7 @@
             <span class="error-text"></span></label>
           <div class="field span-2"><span class="label">${t('Color')}</span>
             <div class="color-picker">${COLORS.map((c) => h`<button type="button" data-color="${c}" data-pick-color="${c}" aria-pressed="${c === color}" title="${t(c)}">${icon('check')}</button>`)}</div></div>
+          <div class="field span-2"><span class="label">${t('Icon')}</span>${IconPicker.markup(group?.icon || '', null)}</div>
           <div class="field span-2"><span class="label">${t('Environment')}</span>
             <div class="env-grid">${ENVIRONMENTS.map((env) => h`<button type="button" class="env-option" data-env="${env}" data-pick-env="${env}" aria-pressed="${env === environment}">
               <span class="env-dot"></span><span>${envLabel(env)}</span></button>`)}</div>
@@ -62,7 +64,7 @@
       const checked = dialog.querySelectorAll('.member-list input:checked').length;
       const preview = dialog.querySelector('#group-preview');
       preview.dataset.color = color;
-      preview.innerHTML = h`<strong>${form.elements.name.value.trim() || t('Group name')}</strong>
+      preview.innerHTML = h`${iconState.value ? Icons.tile(iconState.value, 'small') : ''}<strong>${form.elements.name.value.trim() || t('Group name')}</strong>
         ${environment ? h`<span class="env" data-env="${environment}">${envLabel(environment)}</span>` : ''}
         <span class="muted">${t('{n} services', { n: I18n.num(checked) })}</span>`;
       const count = dialog.querySelector('#member-count');
@@ -76,10 +78,12 @@
       const used = new Set(Store.state.config.groups.map((g) => g.color));
       color = group?.color || COLORS.find((c) => !used.has(c)) || 'blue';
       environment = group?.environment || '';
+      iconState = { value: group?.icon || '', automatic: '' };
       const selected = new Set(preselect);
       for (const s of Store.state.config.services) if (id && s.group === id) selected.add(s.id);
       Overlays.Sheet.open(dialog, template(group, selected));
       const form = dialog.querySelector('form');
+      IconPicker.bind(dialog.querySelector('.icon-picker'), iconState, refresh);
       refresh();
       dialog.addEventListener('click', onClick);
       dialog.onclose = () => dialog.removeEventListener('click', onClick);
@@ -122,7 +126,7 @@
       const name = form.elements.name.value;
       const result = await Native.call('group.save', {
         id: editing,
-        data: { name, color, environment, note: form.elements.note.value },
+        data: { name, color, environment, icon: iconState.value, note: form.elements.note.value },
         services,
       });
       if (!result.ok) {

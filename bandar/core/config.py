@@ -61,6 +61,7 @@ DEFAULT_SETTINGS = {
     "retryMaxDelay": 30,
     "startTimeout": 20,
     "healthCheckInterval": 0,
+    "clusterCheckInterval": 10,
     "startup": "restore",
     "closeAction": "ask",
     "confirmDelete": True,
@@ -86,6 +87,7 @@ _NUMBERS = {
     "retryMaxDelay": (2, 600),
     "startTimeout": (5, 300),
     "healthCheckInterval": (0, 3600),
+    "clusterCheckInterval": (0, 600),
 }
 _FLAGS = (
     "autoRetry",
@@ -100,6 +102,7 @@ _K8S_NAME = re.compile(r"^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$")
 _NAMESPACE = re.compile(r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 _PORT_NAME = re.compile(r"^(?=.*[a-z])[a-z0-9]([a-z0-9-]{0,13}[a-z0-9])?$")
 _ID = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
+_ICON = re.compile(r"^[a-z0-9-]{1,40}$")
 
 
 class ConfigError(Exception):
@@ -188,8 +191,9 @@ def normalize_settings(values) -> dict:
         result["closeAction"] = "quit"
     for key, (low, high) in _NUMBERS.items():
         result[key] = bounded(values.get(key), DEFAULT_SETTINGS[key], low, high)
-    if 0 < result["healthCheckInterval"] < 5:
-        result["healthCheckInterval"] = 5
+    for key in ("healthCheckInterval", "clusterCheckInterval"):
+        if 0 < result[key] < 5:
+            result[key] = 5
     for key in ("kubectl", "kubeconfig"):
         text = clean_text(values.get(key), 1024)
         if text or key == "kubeconfig":
@@ -238,6 +242,11 @@ def valid_context(value: str) -> bool:
     return len(value) <= 253 and not re.search(r"\s", value) and not _CONTROL.search(value)
 
 
+def icon_key(value) -> str:
+    """An icon name from the interface's catalog, or "" (services then guess one)."""
+    return value if isinstance(value, str) and _ICON.match(value) else ""
+
+
 def _args(value) -> list:
     if not isinstance(value, list):
         return []
@@ -278,6 +287,8 @@ def _service(raw, groups_by_key, taken_ids, taken_names):
         "address": address if valid_address(address) else "127.0.0.1",
         "extraArgs": _args(raw.get("extraArgs")),
         "autoStart": raw.get("autoStart") is True,
+        "pinned": raw.get("pinned") is True,
+        "icon": icon_key(raw.get("icon")),
         "note": clean_text(raw.get("note"), 300),
     }
 
@@ -311,6 +322,8 @@ def normalize(raw) -> dict:
                 "environment": item.get("environment")
                 if item.get("environment") in ENVIRONMENTS
                 else "",
+                "pinned": item.get("pinned") is True,
+                "icon": icon_key(item.get("icon")),
                 "note": clean_text(item.get("note"), 300),
             }
         )
@@ -438,6 +451,8 @@ def validate_service(data, config, editing=None):
         "address": address,
         "extraArgs": extra,
         "autoStart": data.get("autoStart") is True,
+        "pinned": bool(current and current.get("pinned")),
+        "icon": icon_key(data.get("icon")),
         "note": clean_text(data.get("note"), 300),
     }, {}
 
@@ -460,6 +475,8 @@ def validate_group(data, config, editing=None):
         "color": data.get("color") if data.get("color") in GROUP_COLORS else "blue",
         "collapsed": current["collapsed"] if current else False,
         "environment": data.get("environment") if data.get("environment") in ENVIRONMENTS else "",
+        "pinned": bool(current and current.get("pinned")),
+        "icon": icon_key(data.get("icon")),
         "note": clean_text(data.get("note"), 300),
     }, {}
 

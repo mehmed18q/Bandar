@@ -30,6 +30,7 @@ from bandar.infra.store import ConfigStore
 from bandar.runtime.forward import COMMAND_FIELDS, State
 from bandar.runtime.manager import ForwardManager
 from bandar.runtime.tasks import TaskRunner
+from bandar.runtime.watchdog import ClusterWatchdog
 
 log = logging.getLogger(__name__)
 CONTEXT_REFRESH_MS = 60_000
@@ -47,13 +48,21 @@ class Application(QObject):
         self.store = ConfigStore(config_path, self.tasks, self)
         self.config, self.config_notice = self.store.load()
         self.kube = KubeClient(self.settings, self)
-        self.kube_info = {"current": "", "contexts": [], "error": None, "version": ""}
+        self.kube_info = {
+            "current": "",
+            "contexts": [],
+            "error": None,
+            "version": "",
+            "unreachable": [],
+        }
         self.manager = ForwardManager(self.settings, self.tasks, self.current_context, self)
         self.manager.sync(self.config["services"])
         self.manager.changed.connect(self._runtime_changed)
         self.manager.logged.connect(self.logLine)
         self.manager.failed.connect(self._forward_failed)
         self.manager.recovered.connect(self._forward_recovered)
+        self.watchdog = ClusterWatchdog(self.manager, self.settings, self)
+        self.watchdog.checked.connect(self._cluster_checked)
         self.store.externalChange.connect(self._external_change)
         self.store.externalInvalid.connect(self._external_invalid)
         self.store.saveFailed.connect(
@@ -76,6 +85,7 @@ class Application(QObject):
             self.store.save(self.config)  # create the file so it can be found and edited
         self.refresh_contexts()
         self._context_timer.start(CONTEXT_REFRESH_MS)
+        self.watchdog.start()
         self.kube.query("version", {}, self._version_known)
         if self.config_notice:
             self._notify("error", self.config_notice["code"], detail=self.config_notice["detail"])
@@ -87,6 +97,8 @@ class Application(QObject):
 
     def shutdown(self):
         self._context_timer.stop()
+        self.watchdog.stop()
+        self.kube.shutdown()
         stopped = self.manager.shutdown()
         self.tasks.shutdown(wait=True)
         self.store.flush(self.config)
@@ -242,6 +254,21 @@ class Application(QObject):
             ids = {s["id"] for s in config["services"] if s["group"] == wanted}
         config["services"] = cfg.sorted_by_name(config["services"], ids)
         self._commit(config)
+        return {"ok": True}
+
+    def pin(self, params):
+        """Pin or unpin services and groups; pinned items gather in the "Pinned" view."""
+        pinned = params.get("pinned") is True
+        services = set(params.get("services") or [])
+        groups = set(params.get("groups") or [])
+        config = copy.deepcopy(self.config)
+        for item in config["services"]:
+            if item["id"] in services:
+                item["pinned"] = pinned
+        for item in config["groups"]:
+            if item["id"] in groups:
+                item["pinned"] = pinned
+        self._commit(config, sync=False)
         return {"ok": True}
 
     # ------------------------------------------------------------ groups
@@ -435,6 +462,11 @@ class Application(QObject):
     def update_settings(self, params):
         config = copy.deepcopy(self.config)
         config["settings"] = cfg.normalize_settings({**config["settings"], **(params or {})})
+        if (
+            config["settings"]["clusterCheckInterval"]
+            != self.config["settings"]["clusterCheckInterval"]
+        ):
+            QTimer.singleShot(0, self.watchdog.apply_settings)
         tooling = ("kubectl", "kubeconfig")
         if any(config["settings"][k] != self.config["settings"][k] for k in tooling):
             self.kube.invalidate()
@@ -530,6 +562,12 @@ class Application(QObject):
             state=snapshot["state"],
             kind=kind,
         )
+
+    def _cluster_checked(self, _context, _reachable, _problem):
+        unreachable = sorted(self.watchdog.unreachable)
+        if unreachable != self.kube_info["unreachable"]:
+            self.kube_info["unreachable"] = unreachable
+            self.stateChanged.emit()
 
     def _forward_recovered(self, sid, snapshot):
         service = self._service(sid)

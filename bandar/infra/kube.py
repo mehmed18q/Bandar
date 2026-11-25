@@ -75,6 +75,16 @@ class KubeClient(QObject):
         self._settings = settings
         self._cache = {}
         self._waiting = {}
+        self._processes = set()
+
+    def shutdown(self):
+        """Stop queries still running; their callers are going away."""
+        self._waiting.clear()
+        for process in list(self._processes):
+            process.finished.disconnect()
+            process.kill()
+            process.waitForFinished(300)
+        self._processes.clear()
 
     def invalidate(self):
         self._cache.clear()
@@ -148,12 +158,14 @@ class KubeClient(QObject):
         process.setArguments(args)
         process.finished.connect(partial(self._finished, process, key, parser, deadline, cache))
         process.errorOccurred.connect(partial(self._error, process, key))
+        self._processes.add(process)
         process.start()
         deadline.start(TIMEOUT_MS)
 
     def _finished(self, process, key, parser, deadline, cache, code, _status):
         timed_out = not deadline.isActive()
         deadline.stop()
+        self._processes.discard(process)
         output = bytes(process.readAllStandardOutput().data()).decode(errors="replace")
         errors = bytes(process.readAllStandardError().data()).decode(errors="replace")
         process.deleteLater()
@@ -174,6 +186,7 @@ class KubeClient(QObject):
         if error != QProcess.ProcessError.FailedToStart:
             return
         detail = f"{process.program()}: {process.errorString()}"
+        self._processes.discard(process)
         process.deleteLater()
         self._deliver(
             key, {"ok": False, "error": Problem("kubectl_missing", False, detail).as_dict()}

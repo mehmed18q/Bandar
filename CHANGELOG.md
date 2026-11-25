@@ -2,6 +2,15 @@
 
 ## 1.2.0 — 2026-11-25
 
+- Connectivity watchdog: every cluster in use is checked every few seconds and right after a network
+  change or wake from sleep. A dropped network, VPN or cluster is detected even though kubectl
+  stays silent; tunnels are rebuilt with backoff, you are notified, and they reconnect as soon as
+  the cluster answers. Tunnels older than a network change are rebuilt too, since their connections
+  may be dead. A banner names the unreachable clusters; bursts of failures become one notification.
+- Pin services and groups; a "Pinned" view in the sidebar (P toggles a pin in the list).
+- Technology icons for services and groups (PostgreSQL, Redis, Redis Cluster, Kafka, Docker,
+  Kubernetes and 30 more), detected from the name and port or chosen by hand.
+- Clicking outside a dialog or the details panel closes it; clicking a group row opens or collapses it.
 - Arabic interface; the language picker (with flags) and the "Theme & colors" panel now work as in Khana.
 - Switch kubectl's current context from the sidebar or status bar, and open the kubeconfig file or folder.
 - System notifications when a forward drops, fails to start or reconnects, with Retry and Show

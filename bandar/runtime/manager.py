@@ -101,7 +101,28 @@ class ForwardManager(QObject):
                 return other
         return None
 
+    def lose(self, context: str, problem: Problem):
+        """Rebuild every tunnel that goes through ``context`` (its cluster is unreachable)."""
+        for forward in self._forwards.values():
+            if forward.context_key == context:
+                forward.lose(problem)
+
+    def refresh(self, context: str, since: float):
+        """After a network change: rebuild the context's tunnels that are older than it."""
+        for forward in self._forwards.values():
+            if forward.context_key == context and since:
+                forward.refresh(since)
+
+    def hurry(self, context: str):
+        for forward in self._forwards.values():
+            if forward.context_key == context:
+                forward.hurry()
+
     # ------------------------------------------------------------ queries
+
+    def contexts_in_use(self) -> set:
+        """Contexts of forwards that should be running, for the cluster watchdog."""
+        return {f.context_key for f in self._forwards.values() if f.desired and f.state in ACTIVE}
 
     def get(self, sid):
         return self._forwards.get(sid)

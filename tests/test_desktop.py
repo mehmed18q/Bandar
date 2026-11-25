@@ -16,14 +16,22 @@ class DesktopEntryTests(unittest.TestCase):
     def test_source_runs_register_an_entry_matching_the_application_id(self):
         with tempfile.TemporaryDirectory() as folder:
             data = Path(folder)
-            self.assertTrue(register_source_run(ROOT, data))
-            self.assertFalse(register_source_run(ROOT, data), "second run changes nothing")
+            nowhere = data / "no-system-entry"
+            self.assertTrue(register_source_run(ROOT, data, nowhere))
+            self.assertFalse(register_source_run(ROOT, data, nowhere), "second run changes nothing")
             entry = (data / "applications" / f"{APP_ID}.desktop").read_text()
             self.assertIn("Name=Bandar", entry)
             self.assertIn(f"Icon={APP_ID}", entry)
             self.assertIn("StartupWMClass=Bandar", entry)
             self.assertIn(str(ROOT / "bandar.sh"), entry)
             self.assertTrue((data / "icons/hicolor/scalable/apps" / f"{APP_ID}.svg").is_file())
+
+    def test_an_installed_package_takes_precedence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            system = Path(folder) / "system"
+            system.mkdir()
+            (system / f"{APP_ID}.desktop").write_text("[Desktop Entry]\n")
+            self.assertFalse(register_source_run(ROOT, Path(folder) / "data", system))
 
     def test_paths_with_spaces_are_quoted(self):
         self.assertIn(
@@ -58,7 +66,7 @@ class NotifierTests(unittest.TestCase):
         self.assertTrue(notifier.notify("s_2", "failed", "cache", "Failed", "fa", "critical"))
         self.assertTrue(wait_until(lambda: len(clicks) == 2 and not notifier.pending))
         notifier.shutdown()
-        self.assertEqual(clicks[0], ("s_1", "retry"))
+        self.assertEqual(clicks[0], (["s_1"], "retry"))
         calls = self.log.read_text()
         self.assertIn("--app-name=Bandar", calls)
         self.assertIn(f"--hint=string:desktop-entry:{APP_ID}", calls)

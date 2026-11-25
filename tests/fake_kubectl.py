@@ -11,6 +11,10 @@ selects a scenario:
     missing-*     fail at once with a NotFound error
     slow-*        never print anything (start timeout)
     warn-*        healthy, and report a refused connection inside the pod
+
+The file named by $FAKE_KUBECTL_OFFLINE simulates a dropped VPN: while it exists
+the "cluster" is unreachable (running tunnels, like kubectl's, notice nothing).
+Its content selects the failure: "slow" for a timeout, anything else for no route.
 """
 
 import json
@@ -110,9 +114,28 @@ def port_forward(args):
             continue
 
 
+def offline():
+    """The simulated network failure, or None while the cluster is reachable."""
+    marker = os.environ.get("FAKE_KUBECTL_OFFLINE", "")
+    if not marker or not os.path.exists(marker):
+        return None
+    with open(marker) as handle:
+        mode = handle.read().strip()
+    if mode == "slow":
+        return "Unable to connect to the server: net/http: TLS handshake timeout"
+    return "Unable to connect to the server: dial tcp 10.10.0.1:6443: connect: no route to host"
+
+
 def main():
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
     args = sys.argv[1:]
+    failure = offline()
+    if failure and ("port-forward" in args or "--raw" in args):
+        print(failure, file=sys.stderr)
+        return 1
+    if "--raw" in args:
+        print(json.dumps({"major": "1", "minor": "30", "gitVersion": "v1.30.14"}))
+        return 0
     if "port-forward" in args:
         return port_forward(args)
     if "use-context" in args:

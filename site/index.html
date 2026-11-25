@@ -315,11 +315,12 @@
           <div class="features">
             <div class="feature"><span class="dot">⚓</span><h3>Named services</h3><p>Context, namespace, resource and ports in one record. Paste any kubectl command to fill the form; namespaces, resources and their ports are suggested from the cluster.</p></div>
             <div class="feature"><span class="dot">▦</span><h3>Groups and environments</h3><p>Group services, start or stop a whole group, and tag it <span class="env prod">PROD</span> <span class="env stg">STG</span> <span class="env old">OLD</span> so you never confuse production with staging.</p></div>
-            <div class="feature"><span class="dot">↻</span><h3>Automatic reconnection</h3><p>Dropped tunnels come back with exponential backoff. Problems that need you — expired credentials, a wrong context — stop and say so.</p></div>
+            <div class="feature"><span class="dot">↻</span><h3>Survives network loss</h3><p>A dropped network, VPN or cluster is noticed within seconds even though kubectl stays silent. Tunnels are rebuilt, you are notified, and they reconnect the moment the cluster answers — also after sleep.</p></div>
             <div class="feature"><span class="dot">!</span><h3>Errors you can act on</h3><p>“Local port 5432 is used by postgres (PID 1234)” instead of a stack trace, with Retry, Edit or Free the port right under the service.</p></div>
             <div class="feature"><span class="dot">⌁</span><h3>Ports stay yours</h3><p>A local port belongs to one service even while it is stopped, and busy ports are caught before you save.</p></div>
             <div class="feature"><span class="dot">⇄</span><h3>Switch contexts</h3><p>See and change kubectl’s current context, open your kubeconfig, and restart the services that follow it.</p></div>
             <div class="feature"><span class="dot">🔔</span><h3>Notifications</h3><p>A desktop notification when a forward drops, fails to start or reconnects, with a Retry button.</p></div>
+            <div class="feature"><span class="dot">📌</span><h3>Pins and logos</h3><p>Pin the services you use most, and recognise each one by its logo — PostgreSQL, Redis, Kafka, Docker and more, detected automatically.</p></div>
             <div class="feature"><span class="dot">{ }</span><h3>One JSON file</h3><p>Services, groups and settings live in <code>~/.config/bandar/config.json</code>. Edit it by hand and Bandar reloads it.</p></div>
           </div>
         </div>

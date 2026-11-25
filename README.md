@@ -18,6 +18,11 @@ and named, with live status, automatic reconnection and errors that say what to 
   legacy) and a note. Start, stop or restart a whole group; empty groups accept dropped services.
 - **Ordering**: drag and drop services between and within groups, reorder groups, sort A→Z, or sort
   the table by any column.
+- **Connectivity watchdog**: a dropped network, VPN or cluster is noticed within seconds (kubectl
+  itself stays silent), tunnels are rebuilt, you get one notification, and they reconnect as soon as
+  the cluster answers, also after sleep or a network change.
+- **Pins and icons**: pin services or groups into the "Pinned" view; each service shows its
+  technology's logo (PostgreSQL, Redis, Kafka, Docker, …), detected or chosen.
 - **Supervision**: every forward is a small state machine (stopped → starting → healthy, retrying,
   error). Dropped tunnels reconnect with exponential backoff; problems that need you (wrong context,
   expired credentials, busy port) stop and explain what to do.
@@ -111,6 +116,9 @@ python3 scripts/build_ubuntu24.py                       # release .deb, built an
 ```
 
 `tests/fake_kubectl.py` stands in for kubectl, so tests never touch a cluster.
+
+Technology logos come from [Simple Icons](https://simpleicons.org) (CC0-1.0); they are trademarks
+of their owners and only identify the technology. Regenerate them with `scripts/make_icons.py`.
 
 ## License and credits
 

@@ -84,6 +84,8 @@
 }
 .group-row {
   height: 44px;
+  cursor: pointer;
+  user-select: none;
   background: color-mix(in srgb, var(--group, var(--idle)), var(--paper) 94%);
   border-bottom: 1px solid var(--line-soft);
   position: relative;

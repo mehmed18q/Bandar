@@ -12,6 +12,7 @@
     ['/', 'Search'],
     ['Ctrl+A', 'Select all visible services'],
     ['Delete', 'Delete selected services'],
+    ['P', 'Pin or unpin the focused service'],
     ['Esc', 'Close panels or clear the selection'],
   ];
 
@@ -57,6 +58,7 @@
           ${number('maxRetries', t('Maximum attempts'), t('0 keeps trying forever.'), s.maxRetries, 0, 1000)}
           ${number('retryMaxDelay', t('Longest wait between attempts (s)'), t('Backoff doubles from one second up to this limit.'), s.retryMaxDelay, 2, 600)}
           ${number('startTimeout', t('Start timeout (s)'), t('How long kubectl may take to start listening.'), s.startTimeout, 5, 300)}
+          ${number('clusterCheckInterval', t('Check cluster connectivity every (s)'), t('Notices lost connectivity (network, VPN or cluster down) within seconds, rebuilds the tunnels and notifies you. 0 turns it off.'), s.clusterCheckInterval, 0, 600)}
           ${number('healthCheckInterval', t('Health check every (s)'), t('Opens a test connection through each tunnel to detect silent failures. 0 turns it off.'), s.healthCheckInterval, 0, 3600)}
         </section>
         <section class="settings-section"><h3>${t('Behavior')}</h3>

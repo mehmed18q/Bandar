@@ -62,6 +62,10 @@
       const result = await call('command.preview', { data: Store.service(id) });
       this.copy(result.command, t('Command copied'));
     },
+    pin(services, groups, pinned) {
+      call('pin.set', { services, groups, pinned });
+      Toast.show({ tone: 'ok', title: pinned ? t('Pinned') : t('Unpinned'), key: 'pin', timeout: 1800 });
+    },
     moveService(id, group, before) {
       call('service.move', { id, group, before });
     },
@@ -199,6 +203,9 @@
           : { label: t('Start'), icon: 'play', run: () => actions.forward('start', [id]) },
         { label: t('Restart'), icon: 'restart', disabled: !active, run: () => actions.forward('restart', [id]) },
         { label: t('Details and logs'), icon: 'logs', run: () => actions.details(id) },
+        service.pinned
+          ? { label: t('Unpin'), icon: 'pin', shortcut: 'P', run: () => actions.pin([id], [], false) }
+          : { label: t('Pin'), icon: 'pin', shortcut: 'P', run: () => actions.pin([id], [], true) },
         '-',
         { label: t('Edit…'), icon: 'edit', run: () => actions.editService(id) },
         { label: t('Duplicate'), icon: 'duplicate', run: () => actions.duplicate(id) },
@@ -225,6 +232,9 @@
       Menu.open(anchor, [
         { label: t('Add a service here'), icon: 'plus', run: () => actions.newService({ group: key }) },
         { label: t('Edit group…'), icon: 'edit', run: () => actions.editGroup(key) },
+        Store.group(key)?.pinned
+          ? { label: t('Unpin group'), icon: 'pin', run: () => actions.pin([], [key], false) }
+          : { label: t('Pin group'), icon: 'pin', run: () => actions.pin([], [key], true) },
         { label: t('Sort services A→Z'), icon: 'sort-az', run: () => call('service.sort', { group: key }) },
         { label: t('Move group up'), icon: 'arrow-up', disabled: index <= 0, run: () => actions.moveGroup(key, groups[index - 1].id) },
         { label: t('Move group down'), icon: 'arrow-down', disabled: index >= groups.length - 1, run: () => actions.moveGroup(key, groups[index + 2]?.id ?? null) },
@@ -248,6 +258,7 @@
   // ------------------------------------------------------------------ shell rendering
   const VIEW_TITLES = {
     all: 'All services',
+    pinned: 'Pinned',
     running: 'Running',
     problems: 'Problems',
     stopped: 'Stopped',
@@ -346,6 +357,11 @@
     const save = $('#status-save');
     save.classList.toggle('err', !!(state.meta.readOnly || state.ui.saveError));
     save.textContent = state.meta.readOnly ? t('Read-only: fix the configuration file') : state.ui.saveError ? t('Saving failed') : t('Auto-saved');
+    const unreachable = state.meta.kube?.unreachable || [];
+    $('#network-banner').hidden = !unreachable.length;
+    $('#network-banner-title').textContent = t('Cannot reach the cluster: {contexts}', {
+      contexts: unreachable.map((c) => c || state.meta.kube?.current || t('current context')).join(', '),
+    });
     $('#config-banner').hidden = !state.meta.configError;
     $('#config-banner-detail').textContent = state.meta.configError || '';
   }
@@ -399,6 +415,7 @@
       const kind = button.dataset.bulk;
       if (kind === 'start' || kind === 'stop' || kind === 'restart') actions.forward(kind, ids);
       if (kind === 'move') actions.groupPicker(ids, button);
+      if (kind === 'pin') actions.pin(ids, [], !ids.every((id) => Store.service(id)?.pinned));
       if (kind === 'delete') actions.deleteServices(ids);
       if (kind === 'clear') Store.ui({ selected: new Set() });
     });
@@ -427,6 +444,12 @@
     media.addEventListener('change', () => Store.refresh());
     addEventListener('focus', () => call('kube.refresh'));
     document.addEventListener('keydown', shortcuts);
+    // A click outside the details panel closes it; clicking another service switches it instead.
+    document.addEventListener('pointerdown', (event) => {
+      if (!Store.state.ui.drawer || event.button !== 0) return;
+      const keep = '#drawer, .service-row, dialog, .menu, .toasts, .picker-menu, .theme-anchor';
+      if (!event.target.closest(keep)) drawer.close();
+    });
   }
 
   function shortcuts(event) {
@@ -497,21 +520,55 @@
   }
 
   // ------------------------------------------------------------------ events from Python
-  function notice({ notice: n }) {
-    if (n.code === 'forward_failed') {
-      const service = Store.service(n.id);
-      if (!service) return;
-      const info = Messages.problem(n.error || {}, service, {});
+  const burst = { failed: [], recovered: [], timer: 0 };
+
+  function flushBurst() {
+    const { failed, recovered } = burst;
+    burst.failed = [];
+    burst.recovered = [];
+    if (failed.length === 1) showFailure(failed[0]);
+    else if (failed.length > 1) {
+      const unreachable = failed.every((n) => n.error?.code === 'api_unreachable');
       Toast.show({
-        tone: n.level === 'error' ? 'err' : 'warn',
-        title: `${n.service}: ${info.title}`,
-        body: n.state === 'retrying' ? t('Reconnecting automatically…') : info.hint,
-        key: `fail:${n.id}`,
-        actions: [{ label: t('Details'), run: () => actions.details(n.id) }],
+        tone: failed.some((n) => n.level === 'error') ? 'err' : 'warn',
+        title: unreachable
+          ? t('{n} services lost the cluster', { n: I18n.num(failed.length) })
+          : t('{n} services have problems', { n: I18n.num(failed.length) }),
+        body: `${failed.map((n) => n.service).slice(0, 5).join(', ')}${failed.length > 5 ? '…' : ''}`,
+        key: 'burst-failed',
+        actions: [{ label: t('Show problems'), run: () => Store.ui({ view: 'problems', group: null }) }],
       });
-    } else if (n.code === 'forward_recovered') {
-      Toast.show({ tone: 'ok', title: t('{name}: reconnected', { name: n.service }), key: `fail:${n.id}`, timeout: 3500 });
-    } else if (n.code === 'config_reloaded') {
+    }
+    if (recovered.length === 1) {
+      Toast.show({ tone: 'ok', title: t('{name}: reconnected', { name: recovered[0].service }), key: `fail:${recovered[0].id}`, timeout: 3500 });
+    } else if (recovered.length > 1) {
+      Toast.show({ tone: 'ok', title: t('{n} services reconnected', { n: I18n.num(recovered.length) }), key: 'burst-recovered', timeout: 4000 });
+    }
+  }
+
+  function queueBurst(kind, n) {
+    burst[kind].push(n);
+    clearTimeout(burst.timer);
+    burst.timer = setTimeout(flushBurst, 900);
+  }
+
+  function showFailure(n) {
+    const service = Store.service(n.id);
+    if (!service) return;
+    const info = Messages.problem(n.error || {}, service, {});
+    Toast.show({
+      tone: n.level === 'error' ? 'err' : 'warn',
+      title: `${n.service}: ${info.title}`,
+      body: n.state === 'retrying' ? t('Reconnecting automatically…') : info.hint,
+      key: `fail:${n.id}`,
+      actions: [{ label: t('Details'), run: () => actions.details(n.id) }],
+    });
+  }
+
+  function notice({ notice: n }) {
+    if (n.code === 'forward_failed') return queueBurst('failed', n);
+    if (n.code === 'forward_recovered') return queueBurst('recovered', n);
+    if (n.code === 'config_reloaded') {
       Toast.show({ tone: 'info', title: t('Configuration reloaded'), body: t('The JSON file was changed outside Bandar.') });
     } else if (n.code === 'config_invalid' || n.code === 'config_unreadable') {
       Toast.show({ tone: 'err', title: t('The configuration file has an error. Changes are not being saved.'), body: n.detail, key: 'config' });

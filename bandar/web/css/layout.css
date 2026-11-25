@@ -364,6 +364,14 @@
 .banner > svg {
   color: var(--err);
 }
+.banner.warn {
+  background: var(--warn-soft);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--warn), transparent 55%);
+}
+.banner.warn > svg {
+  color: var(--warn);
+}
 .banner > div {
   display: flex;
   flex-direction: column;
